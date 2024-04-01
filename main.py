@@ -32,3 +32,8 @@ async def root(request: Request):
     ts = int(time.time())
     data = {"request": request, "HOSTNAME": HOSTNAME, "DEV_MODE": DEV_MODE, 'timestamp': ts}
     return templates.TemplateResponse("index.html", data)
+
+@zaloapp.get("/zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", response_class=HTMLResponse)
+async def zalo_verifier(request: Request):
+    data = {"request": request}
+    return templates.TemplateResponse("zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", data)
