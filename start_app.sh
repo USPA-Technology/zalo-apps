@@ -10,10 +10,10 @@ fi
 
 # kill old process to restart
 kill -15 $(pgrep -f "uvicorn main:zaloapp")
-sleep 2
+sleep 3
 
 # Activate your virtual environment if necessary
-SOURCE_PATH=".venv/bin/activate"
+SOURCE_PATH="env/bin/activate"
 source $SOURCE_PATH
 
 # clear old log
