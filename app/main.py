@@ -18,9 +18,7 @@ async def get_followers():
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, params={"data": json.dumps({"offset":0,"count":5,"tag_name":""})}, headers={"access_token": access_token})
             users_follow = response.json()["data"]["followers"]
-            # user_ids = [follower["user_id"] for follower in users_follow]  # Lấy user_id từ mỗi follower
-            # # Luu user_id vào cơ sở dữ liệu ArangoDB
-            # for user_id in user_ids:
+            # user_ids = [follower["user_id"] for follower in users_follow]
             #     db_profile.insert({"user_id_zalo": user_id})
             return users_follow
     except httpx.RequestError as e:
@@ -40,7 +38,7 @@ async def get_profile(user_id: str):
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
 
-# Run server
+# Run server uvicorn 
 if __name__ == "__main__":
     
     import uvicorn
