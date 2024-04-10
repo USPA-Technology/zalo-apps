@@ -16,7 +16,7 @@ async def get_followers():
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, params={"data": json.dumps({"offset":0,"count":20,"tag_name":""})}, headers={"access_token": access_token})
-            users_follow = response.json()["data"]
+            users_follow = response.json()["data"]["followers"]
             # user_ids = [follower["user_id"] for follower in users_follow]
             # db_profile.insert({"user_id_zalo": user_ids})
             # db_profile.insert_many({"user_id_zalo": users_follow})
@@ -55,7 +55,7 @@ async def tag_follower(user_id: str, tag_name: str):
 
 # Gui tin truyen thong den khach hang ca nhan
 @app.post('/get_message_promotion/')
-async def get_message(data: dict):
+async def get_message(data: dict): # messege_template in models 
     api_url = "https://openapi.zalo.me/v3.0/oa/message/promotion"
     access_token = ACCESS_TOKEN
     
