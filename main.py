@@ -15,7 +15,7 @@ FOLDER_RESOURCES = os.path.dirname(os.path.abspath(__file__)) + "/resources/"
 FOLDER_TEMPLATES = FOLDER_RESOURCES + "templates"
 
 # init FAST API zaloapp
-zaloapp = FastAPI()
+zaloapp = FastAPI(redoc_url= None, docs_url= None)
 origins = ["*"]
 zaloapp.add_middleware(
     CORSMiddleware,
@@ -38,4 +38,3 @@ async def root(request: Request):
 async def zalo_verifier(request: Request):
     data = {"request": request}
     return templates.TemplateResponse("zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", data)
-

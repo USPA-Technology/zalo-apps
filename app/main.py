@@ -16,9 +16,10 @@ async def get_followers():
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, params={"data": json.dumps({"offset":0,"count":20,"tag_name":""})}, headers={"access_token": access_token})
-            users_follow = response.json()["data"]["followers"]
+            users_follow = response.json()["data"]
             # user_ids = [follower["user_id"] for follower in users_follow]
-            #     db_profile.insert({"user_id_zalo": user_id})
+            # db_profile.insert({"user_id_zalo": user_ids})
+            # db_profile.insert_many({"user_id_zalo": users_follow})
             return users_follow
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
@@ -67,11 +68,9 @@ async def get_message(data: dict):
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
 
 
-
 # Run server uvicorn 
 if __name__ == "__main__":
     
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)  # Optional: Start the server
-    
     
