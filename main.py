@@ -12,7 +12,6 @@ from fastapi.templating import Jinja2Templates
 
 from fastapi import Depends, FastAPI, HTTPException
 from app.core.config import ACCESS_TOKEN
-from app.core.db import db_profile, sys_db
 import httpx
 import json
 
