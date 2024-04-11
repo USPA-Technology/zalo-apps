@@ -23,7 +23,7 @@ FOLDER_RESOURCES = os.path.dirname(os.path.abspath(__file__)) + "/resources/"
 FOLDER_TEMPLATES = FOLDER_RESOURCES + "templates"
 
 # init FAST API zaloapp
-zaloapp = FastAPI(redoc_url= None, docs_url= None)
+zaloapp = FastAPI()
 origins = ["*"]
 zaloapp.add_middleware(
     CORSMiddleware,
@@ -46,8 +46,6 @@ async def root(request: Request):
 async def zalo_verifier(request: Request):
     data = {"request": request}
     return templates.TemplateResponse("zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", data)
-
-
 
 
 # Lay danh sach khach hang quan tam OA
