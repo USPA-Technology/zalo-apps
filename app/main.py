@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, Form
+from fastapi import Depends, FastAPI, HTTPException
 from app.core.config import ACCESS_TOKEN
 from app.core.db import db_profile, sys_db
 import httpx
@@ -68,9 +68,8 @@ async def get_message(data: dict): # messege_template in models
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
 
 
-# Run server uvicorn 
-if __name__ == "__main__":
+# # Run server uvicorn 
+# if __name__ == "__main__":
     
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)  # Optional: Start the server
-    
+#     import uvicorn
+#     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)  # Optional: Start the server
