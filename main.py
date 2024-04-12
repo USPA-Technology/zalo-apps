@@ -94,8 +94,8 @@ async def tag_follower(user_id: str, tag_name: str):
 
 
 # Gui tin truyen thong den khach hang ca nhan
-@zaloapp.post('/sent_message_promotion/')
-async def sent_message(data: dict): # messege_template in models 
+@zaloapp.post('/send_message_promotion/')
+async def send_message(data: dict): # messege_template in models 
     api_url = "https://openapi.zalo.me/v3.0/oa/message/promotion"
     access_token = ACCESS_TOKEN
     
