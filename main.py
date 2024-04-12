@@ -2,18 +2,18 @@ import os
 import time
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-
-
 from fastapi import Depends, FastAPI, HTTPException
-from app.core.config import ACCESS_TOKEN
+from app.core.config import ACCESS_TOKEN, scheduled_refresh_access_token
+import schedule
 import httpx
 import json
+import asyncio
 
 
 DEV_MODE = os.getenv("DEV_MODE") == "true"
@@ -106,3 +106,19 @@ async def send_message(data: dict): # messege_template in models
             return users_follow
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
+
+# Lên lịch chạy hàm scheduled_refresh_access_token vào 16:59:00 hàng ngày
+schedule.every().day.at("17:54:00").do(scheduled_refresh_access_token)
+
+def start_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+async def startup_event():
+    task = BackgroundTasks()
+    task.add_task(start_schedule)
+    print("Startup event activated!")
+    return task
+
+zaloapp.add_event_handler("startup", startup_event)
