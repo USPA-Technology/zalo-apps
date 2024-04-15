@@ -29,17 +29,42 @@
 
 
 
-with open('.abc', 'r') as env_file:
-    lines = env_file.readlines()
-# def test_write_env():
-    new_access_token="123"
-    new_refresh_token="12ldfjakhfd3"
+# with open('.abc', 'r') as env_file:
+#     lines = env_file.readlines()
+# # def test_write_env():
+#     new_access_token="123"
+#     new_refresh_token="12ldfjakhfd3"
     
-    for i, line in enumerate(lines):
-        if line.startswith("ACCESS_TOKEN="):
-            lines[i] = f"ACCESS_TOKEN={new_access_token}\n"
-        elif line.startswith("REFRESH_TOKEN="):
-            lines[i] = f"REFRESH_TOKEN={new_refresh_token}\n"
+#     for i, line in enumerate(lines):
+#         if line.startswith("ACCESS_TOKEN="):
+#             lines[i] = f"ACCESS_TOKEN={new_access_token}\n"
+#         elif line.startswith("REFRESH_TOKEN="):
+#             lines[i] = f"REFRESH_TOKEN={new_refresh_token}\n"
             
-with open('.abc', 'w') as env_file:
-    env_file.writelines(lines)
+# with open('.abc', 'w') as env_file:
+#     env_file.writelines(lines)
+
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+
+def fake_answer_to_everything_m1_model(x: float):
+    return x * 42
+
+m1_models = {}
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Load the ML model
+    m1_models["answer_to_everything"] = fake_answer_to_everything_m1_model
+
+
+from threading import Thread
+
+
+# create a new daemon thread
+thread = Thread(...)
+# configure the thread to be a daemon thread
+thread.daemon = True

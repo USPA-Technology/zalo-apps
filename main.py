@@ -119,6 +119,6 @@ async def startup_event():
     task = BackgroundTasks()
     task.add_task(start_schedule)
     print("Startup event activated!")
-    return task
+    return {"message": "Refresh token success"}
 
 zaloapp.add_event_handler("startup", startup_event)
