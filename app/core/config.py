@@ -51,9 +51,6 @@ def scheduled_refresh_access_token():
         access_token_new = json_data['access_token']
         refresh_token_new = json_data['refresh-token']
         
-        print(access_token_new)
-        print(refresh_token_new)
-        
         with open('.env', 'r') as env_file:
             
             lines = env_file.readlines()
@@ -69,7 +66,3 @@ def scheduled_refresh_access_token():
     except Exception as e:
         print(f"Error updating tokens: {e}")
         
-
-y = refresh_access_token()
-print(y)
-
