@@ -17,6 +17,10 @@ REFRESH_TOKEN = os.getenv("REFRESH_TOKEN")
 APP_ID = os.getenv("APP_ID")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+# Access Token CDP of Event KiotViet
+TOKEN_KEY_CDP_KiotViet = os.getenv("TOKEN_KEY_CDP_KiotViet")
+TOKEN_VALUE_CDP_KiotViet = os.getenv("TOKEN_VALUE_CDP_KiotViet")
+
 
 def refresh_access_token():
     url = "https://oauth.zaloapp.com/v4/oa/access_token"
@@ -66,3 +70,21 @@ def scheduled_refresh_access_token():
     except Exception as e:
         print(f"Error updating tokens: {e}")
         
+
+
+
+# # Lên lịch chạy hàm scheduled_refresh_access_token vào 16:59:00 hàng ngày
+# schedule.every().day.at("17:54:00").do(scheduled_refresh_access_token)
+
+# def start_schedule():
+#     while True:
+#         schedule.run_pending()
+#         time.sleep(1)
+
+# async def startup_event():
+#     task = BackgroundTasks()
+#     task.add_task(start_schedule)
+#     print("Startup event activated!")
+#     return {"message": "Refresh token success"}
+
+# zaloapp.add_event_handler("startup", startup_event)

@@ -9,11 +9,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from fastapi import Depends, FastAPI, HTTPException
-from app.core.config import ACCESS_TOKEN, scheduled_refresh_access_token
-import schedule
+from app.core.config import ACCESS_TOKEN, TOKEN_KEY_CDP_KiotViet, TOKEN_VALUE_CDP_KiotViet
 import httpx
 import json
-import asyncio
+
 
 
 DEV_MODE = os.getenv("DEV_MODE") == "true"
@@ -107,6 +106,11 @@ async def send_message(data: dict): # messege_template in models
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
 
+
+
+
+
+
 # Nhan webhook
 @zaloapp.post("/webhook")
 async def receive_webhook(request: Request):
@@ -114,22 +118,123 @@ async def receive_webhook(request: Request):
     print(result)
     return result
 
+@zaloapp.post("/webhook/kiotviet/customer")
+async def receive_webhook_kiotviet(request: Request):
+    result = await request.json()
+    print(result)
+    return result
+
+
+
+@zaloapp.post("/webhook/kiotviet/invoice")
+async def receive_webhook_kiotviet(request: Request):
+    result = await request.json()
+    print(result)
+    return result
+
+
+#-------------------------------------------------------Test--------
+import http.client
+from datetime import datetime
+import json
+from typing import List, Optional
+
+@zaloapp.post("/webhook/kiotviet/order")
+async def receive_webhook_kiotviet(request: Request):
+    
+    # Nhận dữ liệu JSON từ yêu cầu webhook
+    webhook_data = await request.json()
+    
+    # Lấy danh sách thông báo từ dữ liệu webhook
+    notifications = webhook_data.get('Notifications', [])
+    
+    # Duyệt qua từng thông báo
+    for notification in notifications:
+        
+        # Lấy danh sách dữ liệu từ thông báo
+        data_list = notification.get('Data', [])
+        
+        # Duyệt qua từng bản ghi dữ liệu
+        for data in data_list:
+            
+            # Lấy thông tin từ dữ liệu
+            
+            # Id
+            id = data.get('Id')
+            
+            # Thông tin chi tiết đơn hàng
+            order_details = data.get('OrderDetails', [])
+            
+            # Lặp qua từng sản phẩm trong đơn hàng
+            for order_detail in order_details:
+                
+                # Tên sản phẩm
+                product_name = order_detail.get('ProductName')
+                
+                # Giá sản phẩm
+                price = order_detail.get('Price')
+                
+                # Số lượng sản phẩm
+                quantity = order_detail.get('Quantity')
+                
+                # ... tiếp tục lấy các thông tin khác
+                
+                # Xây dựng sự kiện theo định dạng mong muốn
+                
+                # Thời gian sự kiện
+                event_time = datetime.now().isoformat()
+                
+                # Dữ liệu sự kiện
+                event_data = {
+                    'idType': 'SKU',
+                    'itemId': id,
+                    'quantity': quantity
+                }
+                
+                # Xây dựng thông tin sự kiện
+                tracking_event = {
+                    'eventTime': event_time,
+                    'tpname': product_name,
+                    'eventdata': json.dumps(event_data),
+                    'metric': 'purchase',
+                    'tsval': price,
+                    'tscur': 'VND',
+                    # Thêm các thông tin khác nếu cần
+                }
+                
+                # Gửi sự kiện đến hệ thống theo yêu cầu
+                
+                # Chuyển đổi dữ liệu sự kiện sang định dạng JSON
+                json_payload = json.dumps(tracking_event)
+                
+                # Gửi yêu cầu POST đến hệ thống với dữ liệu sự kiện
+                uri = '/api/event/save'
+                headers = {
+                    "Content-Type": 'application/json',
+                    "Access-Control-Allow-Origin": "*",
+                    "tokenkey": TOKEN_KEY_CDP_KiotViet,
+                    "tokenvalue": TOKEN_VALUE_CDP_KiotViet,
+                }
+                connection = http.client.HTTPSConnection('https://dcdp.bigdatavietnam.org')
+                connection.request('POST', uri, json_payload, headers)
+                
+                # Nhận phản hồi từ hệ thống
+                response = connection.getresponse()
+                result = json.dumps(response.read().decode(), indent=2)
+                print(result)
+                
+    return 'Success'
 
 
 
 
-# # Lên lịch chạy hàm scheduled_refresh_access_token vào 16:59:00 hàng ngày
-# schedule.every().day.at("17:54:00").do(scheduled_refresh_access_token)
 
-# def start_schedule():
-#     while True:
-#         schedule.run_pending()
-#         time.sleep(1)
 
-# async def startup_event():
-#     task = BackgroundTasks()
-#     task.add_task(start_schedule)
-#     print("Startup event activated!")
-#     return {"message": "Refresh token success"}
 
-# zaloapp.add_event_handler("startup", startup_event)
+
+
+
+
+
+
+
