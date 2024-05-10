@@ -107,18 +107,29 @@ async def send_message(data: dict): # messege_template in models
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
 
-# Lên lịch chạy hàm scheduled_refresh_access_token vào 16:59:00 hàng ngày
-schedule.every().day.at("17:54:00").do(scheduled_refresh_access_token)
+# Nhan webhook
+@zaloapp.post("/webhook")
+async def receive_webhook(request: Request):
+    result = await request.json()
+    print(result)
+    return result
 
-def start_schedule():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
-async def startup_event():
-    task = BackgroundTasks()
-    task.add_task(start_schedule)
-    print("Startup event activated!")
-    return {"message": "Refresh token success"}
 
-zaloapp.add_event_handler("startup", startup_event)
+
+
+# # Lên lịch chạy hàm scheduled_refresh_access_token vào 16:59:00 hàng ngày
+# schedule.every().day.at("17:54:00").do(scheduled_refresh_access_token)
+
+# def start_schedule():
+#     while True:
+#         schedule.run_pending()
+#         time.sleep(1)
+
+# async def startup_event():
+#     task = BackgroundTasks()
+#     task.add_task(start_schedule)
+#     print("Startup event activated!")
+#     return {"message": "Refresh token success"}
+
+# zaloapp.add_event_handler("startup", startup_event)
