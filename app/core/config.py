@@ -12,21 +12,21 @@ ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
 
 
 # Access Token of Zalo OA
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-REFRESH_TOKEN = os.getenv("REFRESH_TOKEN")
-APP_ID = os.getenv("APP_ID")
-SECRET_KEY = os.getenv("SECRET_KEY")
+ACCESS_TOKEN_ZALO = os.getenv("ACCESS_TOKEN")
+REFRESH_TOKEN_ZALO = os.getenv("REFRESH_TOKEN")
+APP_ID_ZALO = os.getenv("APP_ID")
+SECRET_KEY_ZALO = os.getenv("SECRET_KEY")
 
-# Access Token CDP of Event KiotViet
-TOKEN_KEY_CDP_KiotViet = os.getenv("TOKEN_KEY_CDP_KiotViet")
-TOKEN_VALUE_CDP_KiotViet = os.getenv("TOKEN_VALUE_CDP_KiotViet")
+# Access Token of KiotViet
+ACCESS_TOKEN_KIOTVIET = os.getenv("ACCESS_TOKEN_KIOTVIET")
+
 
 
 def refresh_access_token():
     url = "https://oauth.zaloapp.com/v4/oa/access_token"
-    refresh_token = REFRESH_TOKEN
-    app_id = APP_ID
-    secret_key = SECRET_KEY
+    refresh_token = REFRESH_TOKEN_ZALO
+    app_id = APP_ID_ZALO
+    secret_key = SECRET_KEY_ZALO
 
     payload = {
         "refresh_token": refresh_token,

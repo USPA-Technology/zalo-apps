@@ -2,16 +2,6 @@ from pydantic import BaseModel
 from typing import Optional, Dict, List, Union
 import json
 
-# class UserBase(BaseModel):
-#     user_id: str
-    
-
-# class UserZaloOA(UserBase):
-#     user_zalo_id: str
-
-
-
-
 template_message = """ {
     "recipient": {
         "user_id": "465869129535977702"
