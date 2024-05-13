@@ -8,6 +8,7 @@ router = APIRouter(tags=['KiotViet'])
 retailer = 'bigdatavietnam'
 
 
+
 # Get information about customer in KiotViet
 @router.get('/getCustomerInfo/{client_code}')
 async def get_customer_info(client_code: str):
@@ -38,7 +39,7 @@ async def get_customer_info(client_code: str):
 
 # Get the customer list in KiotViet
 @router.get('/getCustomerList/')
-async def get_customer_list(
+async def get_customers(
     code: str = None,
     name: str = None,
     contact_number: str = None,
@@ -106,7 +107,7 @@ async def get_customer_list(
     
 # Get order list in KiotViet
 @router.get('/getOrdersList/')
-async def get_orders_list(
+async def get_orders(
     branch_ids: Optional[List[int]] = None,
     customer_ids: List[int] = None,
     customer_code: str = None,
@@ -243,6 +244,5 @@ async def get_invoices(
             return invoices
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
-    
     
     
