@@ -44,3 +44,28 @@ async def zalo_verifier(request: Request):
     return templates.TemplateResponse("zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", data)
 
 
+@zaloapp.post("/webhook/test")
+async def receive_webhook(request: Request):
+    result = await request.json()
+    print(result)
+    
+    
+from fastapi import Request, Response, status
+
+from svix.webhooks import Webhook, WebhookVerificationError
+
+secret = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
+
+@zaloapp.post("/webhook/", status_code=status.HTTP_204_NO_CONTENT)
+async def webhook_handler(request: Request, response: Response):
+    headers = request.headers
+    payload = await request.body()
+
+    try:
+        wh = Webhook(secret)
+        msg = wh.verify(payload, headers)
+    except WebhookVerificationError as e:
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return
+
+    # Do something with the message...
