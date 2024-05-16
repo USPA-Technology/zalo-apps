@@ -9,7 +9,6 @@ signature = SECRET_KEY_WEBHOOK
 router  = APIRouter()
 
 
-ModelKiotViet.Notifications
 
 @router.post("kiotviet/webhook/{secret}")
 async def receive_webhook(data: ModelKiotViet, secret: str):
