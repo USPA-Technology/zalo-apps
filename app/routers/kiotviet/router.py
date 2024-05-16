@@ -14,7 +14,7 @@ async def receive_webhook(data: ModelKiotViet, secret: str):
     if not is_valid_signature(secret, signature):
         raise HTTPException(status_code=400, detail="Invalid signature")
     try:
-        model_data = data.model_dump
+        model_data = data.model_dump()
         return {"message": "Webhook received", "data": model_data}
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
