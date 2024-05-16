@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import ValidationError
-from .schema import ModelKiotViet, Datum
+from .schema import ModelKiotViet
 from ...dependencies import is_valid_signature
 from ...core.config import SECRET_KEY_WEBHOOK
 
@@ -16,7 +16,7 @@ async def receive_webhook(data: ModelKiotViet, secret: str):
         raise HTTPException(status_code=400, detail="Invalid signature")
     try:
         model_data = data.model_dump()
-        return {"message": "Webhook received", "data_customer_name": Datum.CustomerName}
+        return {"message": "Webhook received", "data_customer_name": data.Notifications.Data.CustomerName}
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

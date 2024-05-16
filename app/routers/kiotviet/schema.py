@@ -39,10 +39,10 @@ class Datum(BaseModel):
 
 class Notification(BaseModel):
     Action: str
-    Data: List[Datum]
+    Data: Datum
 
 
 class ModelKiotViet(BaseModel):
     Id: str
     Attempt: str
-    Notifications: List[Notification]
+    Notifications: Notification
