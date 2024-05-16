@@ -43,29 +43,26 @@ async def zalo_verifier(request: Request):
     data = {"request": request}
     return templates.TemplateResponse("zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", data)
 
-
-@zaloapp.post("/webhook/test")
-async def receive_webhook(request: Request):
-    result = await request.json()
-    print(result)
     
     
-from fastapi import Request, Response, status
+import hmac
+import hashlib
 
-from svix.webhooks import Webhook, WebhookVerificationError
+signature = 'fe2904f5f36cdb8266da7df81f0cbc933a64a783f7e840f8973a794d95c3508b'
 
-secret = "whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw"
+def is_valid_signature(secret: str, signature: str) -> bool:
+    computed_signature = hmac.new(
+        secret.encode(),
+        digestmod=hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(computed_signature, signature)
 
-@zaloapp.post("/webhook/", status_code=status.HTTP_204_NO_CONTENT)
-async def webhook_handler(request: Request, response: Response):
-    headers = request.headers
-    payload = await request.body()
 
-    try:
-        wh = Webhook(secret)
-        msg = wh.verify(payload, headers)
-    except WebhookVerificationError as e:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return
+@zaloapp.post("/webhook/{secret}")
+async def receive_webhook(request: Request, secret:str):
+    if not is_valid_signature(secret, signature):
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    data = await request.json()
+    # Process your data here
+    return data
 
-    # Do something with the message...
