@@ -66,3 +66,7 @@ async def receive_webhook(request: Request, secret:str):
     # Process your data here
     return data
 
+@zaloapp.post("/webhook")
+async def receive_webhook(request: Request):
+    result = await request.json()
+    print(result)
