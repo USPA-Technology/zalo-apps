@@ -59,8 +59,9 @@ def is_valid_signature(secret: str, signature: str) -> bool:
 
 
 @zaloapp.post("/webhook/{secret}")
-async def receive_webhook(request: Request, secret:str):
-    if not is_valid_signature(secret, signature):
+async def receive_webhook(request: Request):
+    secret_ = request.path_params.get("secret")
+    if not is_valid_signature(secret_, signature):
         raise HTTPException(status_code=400, detail="Invalid signature")
     data = await request.json()
     # Process your data here
