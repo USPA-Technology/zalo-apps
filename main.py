@@ -45,25 +45,3 @@ async def zalo_verifier(request: Request):
 
     
     
-import hmac
-import hashlib
-
-signature = 'fe2904f5f36cdb8266da7df81f0cbc933a64a783f7e840f8973a794d95c3508b'
-
-def is_valid_signature(secret: str, signature: str) -> bool:
-    computed_signature = hmac.new(
-        secret.encode(),
-        digestmod=hashlib.sha256
-    ).hexdigest()
-    return hmac.compare_digest(computed_signature, signature)
-
-
-@zaloapp.post("/webhook/{secret}")
-async def receive_webhook(request: Request, secret: str):
-    # Xác minh tính hợp lệ của chữ ký dựa trên secret trong URL
-    if not is_valid_signature(secret, signature):
-        raise HTTPException(status_code=400, detail="Invalid signature")
-    
-    # Xử lý dữ liệu webhook
-    data = await request.json()
-    return {"message": "Webhook received", "data": data}

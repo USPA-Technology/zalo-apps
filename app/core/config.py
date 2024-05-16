@@ -20,6 +20,8 @@ SECRET_KEY_ZALO = os.getenv("SECRET_KEY")
 # Access Token of KiotViet
 ACCESS_TOKEN_KIOTVIET = os.getenv("ACCESS_TOKEN_KIOTVIET")
 
+# Secret for Webhook
+SECRET_KEY_WEBHOOK = os.getenv("SECRET_KEY_WEBHOOK")
 
 
 def refresh_access_token():
