@@ -34,15 +34,15 @@ class Datum(BaseModel):
     Description: str
     UsingCod: str
     ModifiedDate: str
-    OrderDetails: OrderDetail
+    OrderDetails: List[OrderDetail]
 
 
 class Notification(BaseModel):
     Action: str
-    Data: Datum
+    Data: List[Datum]
 
 
 class ModelKiotViet(BaseModel):
     Id: str
     Attempt: str
-    Notifications: Notification
+    Notifications: List[Notification]
