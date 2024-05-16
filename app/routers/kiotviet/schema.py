@@ -34,7 +34,7 @@ class Datum(BaseModel):
     Description: str
     UsingCod: str
     ModifiedDate: str
-    OrderDetails: List[OrderDetail]
+    OrderDetails: OrderDetail
 
 
 class Notification(BaseModel):
