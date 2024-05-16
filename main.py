@@ -61,7 +61,7 @@ def is_valid_signature(secret: str, signature: str) -> bool:
 @zaloapp.post("/webhook/{secret}")
 async def receive_webhook(request: Request, secret: str):
     # Xác minh tính hợp lệ của chữ ký dựa trên secret trong URL
-    if not is_valid_signature(secret, request.headers.get("X-Signature", "")):
+    if not is_valid_signature(secret, signature):
         raise HTTPException(status_code=400, detail="Invalid signature")
     
     # Xử lý dữ liệu webhook
