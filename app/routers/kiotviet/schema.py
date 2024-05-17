@@ -14,7 +14,6 @@ class OrderDetail(BaseModel):
     Discount: str
     DiscountRatio: str
 
-
 class Datum(BaseModel):
     Id: str
     Code: str
@@ -46,3 +45,34 @@ class ModelKiotViet(BaseModel):
     Id: str
     Attempt: str
     Notifications: List[Notification]
+
+
+# Model Customer KiotViet
+
+class DatumCustomer(BaseModel):
+    Id: int
+    Code: str
+    Name: str
+    Gender: bool
+    BirthDate: str
+    ContactNumber: str
+    Address: str
+    LocationName: str
+    Email: str
+    ModifiedDate: str
+    Type: int
+    Organization: str
+    TaxCode: str
+    Comments: str
+
+
+class Notification(BaseModel):
+    Action: str
+    Data: List[DatumCustomer]
+
+
+class ModelCustomer(BaseModel):
+    Id: str
+    Attempt: int
+    Notifications: List[Notification]
+

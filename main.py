@@ -7,9 +7,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 from fastapi import Depends, FastAPI, HTTPException
 from app import router
+
 
 DEV_MODE = os.getenv("DEV_MODE") == "true"
 HOSTNAME = os.getenv("HOSTNAME")

@@ -1,73 +1,40 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, List, Union
-import json
+from typing import List, Dict, Optional
 
-template_message = """ {
-    "recipient": {
-        "user_id": "465869129535977702"
-    },
-    "message": {
-        "attachment": {
-            "type": "template",
-            "payload": {
-                "template_type": "promotion",
-                "elements": [
-                    {
-                        "attachment_id":"aERC3A0iYGgQxim8fYIK6fxzsXkaFfq7ZFRB3RCyZH6RyziRis3RNydebK3iSPCJX_cJ3k1nW1EQufjN_pUL1f6Ypq3rTef5nxp6H_HnXKFDiyD5y762HS-baqRpQe5FdA376lTfq1sRyPr8ypd74ecbaLyA-tGmuJ-97W",
-                        "type": "banner"
-                    },
-                    {
-                        "type": "header",
-                        "content": "💥💥Ưu đãi thành viên Platinum💥💥"
-                    },
-                    {
-                        "type": "text",
-                        "align": "left",
-                        "content": "Ưu đãi dành riêng cho khách hàng Nguyen Van A hạng thẻ Platinum<br>Voucher trị giá 150$"
-                    },
-                    {
-                        "type": "table",
-                        "content": [
-                            {
-                                "value": "VC09279222",
-                                "key": "Voucher"
-                            },
-                            {
-                                "value": "30/12/2023",
-                                "key": "Hạn sử dụng"
-                            }
-                        ]
-                    },
-                    {
-                        "type": "text",
-                        "align": "center",
-                        "content": "Áp dụng tất cả cửa hàng trên toàn quốc"
-                    }
-                ],
-                "buttons": [
-                    {
-                        "title": "Tham khảo chương trình",
-                        "image_icon": "",
-                        "type": "oa.open.url", 
-                        "payload": { 
-                           "url": "https://oa.zalo.me/home" 
-                                   }
-                        },
-                        {
-                        "title": "Liên hệ chăm sóc viên",
-                        "image_icon": "aeqg9SYn3nIUYYeWohGI1fYRF3V9f0GHceig8Ckq4WQVcpmWb-9SL8JLPt-6gX0QbTCfSuQv40UEst1imAm53CwFPsQ1jq9MsOnlQe6rIrZOYcrlWBTAKy_UQsV9vnfGozCuOvFfIbN5rcXddFKM4sSYVM0D50I9eWy3",
-                        "type": "oa.query.hide",
-                        "payload": "#tuvan"
-                        
-                    }
-                ]
-            }
-            }
-        }
-    } """
+class Profile(BaseModel):
+    journeyMapIds: str
+    dataLabels: str
+    crmRefId: str
+    governmentIssuedIDs: str
+    primaryAvatar: Optional[str] = None
+    primaryEmail: str
+    secondaryEmails: Optional[str] = None
+    primaryPhone: str
+    secondaryPhones: Optional[str] = None
+    firstName: str
+    middleName: Optional[str] = None
+    lastName: str
+    gender: Optional[str] = None  # or female
+    dateOfBirth: Optional[str] = None  # yyyy-MM-dd
+    livingLocation: Optional[str] = None  # the address of customer
+    livingCity: Optional[str] = None  # the city where customer is living
+    jobTitles: Optional[str] = None  # the Job Title, e.g: CEO; Manager; Head of Sales
+    workingHistory: Optional[str] = None
+    mediaChannels: Optional[str] = None  # reachable media channels, E.g: facebook; linkedin; chat
+    personalInterests: Optional[str] = None
+    contentKeywords: Optional[str] = None
+    productKeywords: Optional[str] = None
+    totalCLV: Optional[float] = None  # this is example data
+    totalCAC: Optional[float] = None  # this is example data
+    totalTransactionValue: Optional[float] = None  # this is example data
+    saleAgencies: Optional[str] = None  # the list of sales sources
+    saleAgents: Optional[str] = None  # the list of sales persons
+    notes: Optional[str] = None
+    extAttributes: Optional[Dict[str, str]] = None
+    incomeHistory: Optional[Dict[str, int]] = None
 
-
-template_message_json = json.loads(template_message)
-print(template_message_json)
-
-
+class Event(BaseModel):
+    eventId: str
+    eventType: str
+    eventTime: str
+    eventData: Dict[str, str]
