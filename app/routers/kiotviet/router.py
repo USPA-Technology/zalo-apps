@@ -1,18 +1,24 @@
-from fastapi import APIRouter, HTTPException, Request, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import ValidationError
-from .schema import ModelKiotViet, ModelCustomer
-from ...dependencies import is_valid_signature
-from ...core.config import SECRET_KEY_WEBHOOK
-import json
-from ...models import Profile, Event
 import httpx
-
+import json
 from typing import TYPE_CHECKING
+
+from .schema import (ModelKiotViet,
+                     ModelCustomer,
+                     ReqCustomerList, RespCustomerList,
+                     )
+from ...models import Profile, Event
+from ...dependencies import is_valid_signature
+from ...core.config import (SECRET_KEY_WEBHOOK,
+                            ACCESS_TOKEN_KIOTVIET, RETAILER,
+                            )
+
 import celery.states
 from celery.result import AsyncResult
-
 from ...worker.celery_app import celery_app
 from ...worker.celery_worker import long_task, send_cdp_api
+
 
 if TYPE_CHECKING:
     from celery import Task
@@ -22,6 +28,7 @@ signature = SECRET_KEY_WEBHOOK
 
 router  = APIRouter()
 
+# [WEBHOOK] - Order Update
 @router.post("kiotviet/webhook/{secret}")
 async def receive_webhook(data: ModelKiotViet, secret: str):
     if not is_valid_signature(secret, signature):
@@ -34,7 +41,7 @@ async def receive_webhook(data: ModelKiotViet, secret: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
-
+# [WEBHOOK] - Customer Update
 @router.post("/kiotviet/customer/webhook/{secret}")
 async def receive_webhook_customer_update(data: ModelCustomer, secret: str):
     if not is_valid_signature(secret, signature):
@@ -46,7 +53,25 @@ async def receive_webhook_customer_update(data: ModelCustomer, secret: str):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
+    
+    
+# [GET-API] - Get Customer list
+@router.get("/kiotviet/customers")
+async def get_list_customer(data: ReqCustomerList):
+    api_url = "https://public.kiotapi.com/customers"
+    access_token = ACCESS_TOKEN_KIOTVIET
+    retailer = RETAILER
+    headers = {
+        "Retailer": retailer,
+        "Authorization": access_token
+    }
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(api_url, headers=headers, params=data)
+            customer_list = response.json()
+            return customer_list
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
 
 
 

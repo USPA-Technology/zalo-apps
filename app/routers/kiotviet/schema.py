@@ -5,6 +5,92 @@ from typing import List
 from pydantic import BaseModel
 
 
+# RequestModel get customer list
+""" 
+GET: https://public.kiotapi.com/customers
+"""
+class ReqCustomerList(BaseModel):
+    code: str | None = None
+    name: str | None = None
+    contactNumber: str | None = None
+    lastModifiedFrom: str | None = None 
+    pageSize: int | None = None
+    currentItem: int | None = None
+    orderBy: str
+    orderDirection: str
+    includeRemoveIds: bool
+    includeTotal: bool
+    includeCustomerGroup: bool
+    birthDate: str
+    groupId: int
+    includeCustomerSocial: bool
+
+# ResponseModel return customer list
+""" 
+Response from GET of model ReqCustomerList
+"""
+class RespDataCustomerList(BaseModel):
+    id: str
+    code: str
+    name: str
+    gender: bool
+    birthDate: str
+    contactNumber: str
+    address: str
+    locationName: str
+    wardName: str
+    email: str
+    organization: str
+    comments: str
+    taxCode: str
+    debt: float
+    totalInvoiced: float
+    totalPoint: float
+    totalRevenue: float
+    retailerId: int
+    modifiedDate: str
+    createdDate: str
+    rewardPoint: int
+    psidFacebook: int
+
+class RespCustomerList(BaseModel):
+    total: int
+    pageSize: int
+    data: List[RespDataCustomerList]
+    removeId: List[int]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class OrderDetail(BaseModel):
     ProductId: str
     ProductCode: str

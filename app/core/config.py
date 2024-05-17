@@ -17,8 +17,9 @@ REFRESH_TOKEN_ZALO = os.getenv("REFRESH_TOKEN")
 APP_ID_ZALO = os.getenv("APP_ID")
 SECRET_KEY_ZALO = os.getenv("SECRET_KEY")
 
-# Access Token of KiotViet
+# [KiotViet - ENV]
 ACCESS_TOKEN_KIOTVIET = os.getenv("ACCESS_TOKEN_KIOTVIET")
+RETAILER = os.getenv("RETAILER")
 
 # Secret for Webhook
 SECRET_KEY_WEBHOOK = os.getenv("SECRET_KEY_WEBHOOK")
