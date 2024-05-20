@@ -20,6 +20,9 @@ SECRET_KEY_ZALO = os.getenv("SECRET_KEY")
 # [KiotViet - ENV]
 ACCESS_TOKEN_KIOTVIET = os.getenv("ACCESS_TOKEN_KIOTVIET")
 RETAILER = os.getenv("RETAILER")
+TOKEN_KEY_CDP_KiotViet = os.getenv("TOKEN_KEY_CDP_KiotViet")
+TOKEN_VALUE_CDP_KiotViet = os.getenv("TOKEN_VALUE_CDP_KiotViet")
+
 
 # Secret for Webhook
 SECRET_KEY_WEBHOOK = os.getenv("SECRET_KEY_WEBHOOK")

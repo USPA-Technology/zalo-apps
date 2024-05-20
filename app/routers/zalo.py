@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import HTTPException
-from ..core.config import ACCESS_TOKEN_ZALO
+from core.config import ACCESS_TOKEN_ZALO
 import httpx
 import json
 
