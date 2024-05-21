@@ -10,32 +10,32 @@ from pydantic import BaseModel
 Response from GET of model ReqCustomerList
 """
 class DatumCustomers(BaseModel):
-    id: str
-    code: str
-    name: str
-    gender: bool
-    birthDate: str
-    contactNumber: str
-    address: str
-    locationName: str
-    wardName: str
-    email: str
-    organization: str
-    comments: str
-    taxCode: str
-    debt: float
-    totalInvoiced: float
-    totalPoint: float
-    totalRevenue: float
-    retailerId: int
-    modifiedDate: str
-    createdDate: str
-    rewardPoint: int
-    psidFacebook: int
+    id: Optional[int] = None
+    code: Optional[str] = None
+    name: Optional[str] = None
+    gender: Optional[bool] = None
+    birthDate: Optional[str] = None
+    contactNumber: Optional[str] = None
+    address: Optional[str] = None
+    locationName: Optional[str] = None
+    wardName: Optional[str] = None
+    email: Optional[str] = None
+    organization: Optional[str] = None
+    comments: Optional[str] = None
+    taxCode: Optional[str] = None
+    debt: Optional[float] = None
+    totalInvoiced: Optional[float] = None
+    totalPoint: Optional[float] = None
+    totalRevenue: Optional[float] = None
+    retailerId: Optional[int] = None
+    modifiedDate: Optional[str] = None
+    createdDate: Optional[str] = None
+    rewardPoint: Optional[int] = None
+    psidFacebook: Optional[int] = None
 
 class RespCustomerList(BaseModel):
-    total: int
-    pageSize: int
+    total: Optional[int] = None
+    pageSize: Optional[int] = None
     data: List[DatumCustomers]
     removeId: List[int]
 

@@ -60,7 +60,7 @@ async def receive_webhook_customer_update(data: ModelCustomer, secret: str):
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
     
-# Get information about customer in KiotViet
+# [API-GET] Get information about customer in KiotViet
 @router.get('/getCustomerInfo/{client_code}')
 async def get_customer_info(client_code: str):
     """
@@ -88,7 +88,7 @@ async def get_customer_info(client_code: str):
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
 
 
-# [GET-API] Get the customer list
+# [API-GET] Get the customer list
 @router.get('/getCustomerList/')
 async def get_customers(
     code: str = None,
@@ -156,7 +156,7 @@ async def get_customers(
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
     
     
-# [GET-API] Get order list
+# [API-GET] Get order list
 @router.get('/getOrdersList/')
 async def get_orders(
     branch_ids: Optional[List[int]] = None,
@@ -224,7 +224,7 @@ async def get_orders(
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
 
 
-# [GET-API] Get the invoice list 
+# [API-GET] Get the invoice list 
 @router.get('/getInvoiceList/')
 async def get_invoices(
     branch_ids: List[int] = None,
@@ -297,6 +297,21 @@ async def get_invoices(
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 """ 

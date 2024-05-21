@@ -37,7 +37,7 @@ async def get_customer_info(client_code: str):
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
 
 
-# Get the customer list in KiotViet
+#[API-GET] Get the customer list in KiotViet
 @router.get('/getCustomerList/')
 async def get_customers(
     code: str = None,
@@ -105,7 +105,7 @@ async def get_customers(
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
     
     
-# Get order list in KiotViet
+#[API-GET] Get order list in KiotViet
 @router.get('/getOrdersList/')
 async def get_orders(
     branch_ids: Optional[List[int]] = None,

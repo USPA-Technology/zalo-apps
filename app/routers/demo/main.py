@@ -143,11 +143,11 @@ def map_to_profile_list(datum: Datum) -> Profile:
         firstName=datum.name
     )
 
-async def send_cdp_api(profiles: List[Profile]):
+async def send_cdp_api(profile: Profile):
     logger.info("Sending data to CDP API")
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(cdp_api_url, headers=cdp_headers, json=[profile.model_dump() for profile in profiles])
+            response = await client.post(url=cdp_api_url, headers=cdp_headers, json= profile.model_dump())
             response.raise_for_status()
             return response.json()
     except httpx.RequestError as e:

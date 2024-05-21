@@ -1,17 +1,22 @@
+""" 
+Using Pydantic define Model of Customer Data
+"""
+
 from pydantic import BaseModel
 from typing import List, Dict, Optional
+
 
 class Profile(BaseModel):
     journeyMapIds: str
     dataLabels: str
-    crmRefId: str
+    crmRefId: Optional[str] = None
     governmentIssuedIDs: str
     primaryAvatar: Optional[str] = None
-    primaryEmail: str
+    primaryEmail: Optional[str] = None
     secondaryEmails: Optional[str] = None
-    primaryPhone: str
+    primaryPhone: Optional[str] = None
     secondaryPhones: Optional[str] = None
-    firstName: str
+    firstName: Optional[str] = None
     middleName: Optional[str] = None
     lastName: str
     gender: Optional[str] = None  # or female
