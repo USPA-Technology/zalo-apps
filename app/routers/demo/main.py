@@ -4,6 +4,7 @@ import json
 import httpx
 from fastapi import HTTPException, APIRouter
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -163,9 +164,12 @@ async def get_customer_list():
         "Retailer": retailer,
         "Authorization": access_token
     }
+    params = {
+        "pageSize": 5
+    }
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(api_url, headers=headers)
+            response = await client.get(api_url, headers=headers, params=params)
             response.raise_for_status()
             client_data = response.json()
             
@@ -178,7 +182,8 @@ async def get_customer_list():
             batch_size = 1
             results = []
             for i in range(0, len(profiles), batch_size):
-                batch = profiles[i:i + batch_size]
+                batch = profiles[i]
+                print(batch)
                 result = await send_cdp_api_list(batch)
                 results.append(result)
                 print(results)

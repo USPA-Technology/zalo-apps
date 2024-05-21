@@ -59,8 +59,8 @@ async def receive_webhook_customer_update(data: ModelCustomer, secret: str):
         raise HTTPException(status_code=500, detail="Internal Server Error")
     
     
-# [API-GET] Get information about customer in KiotViet
-@router.get('/getCustomerInfo/{client_code}')
+# [API-GET] Get information about customer
+@router.get('/kiotviet/customer/{client_code}')
 async def get_customer_info(client_code: str):
     """
     Retrieve information about a customer in KiotViet.
@@ -88,7 +88,7 @@ async def get_customer_info(client_code: str):
 
 
 # [API-GET] Get the customer list
-@router.get('/getCustomerList/')
+@router.get('/kioviet/customers')
 async def get_customers(
     code: str = None,
     name: str = None,
@@ -156,7 +156,7 @@ async def get_customers(
     
     
 # [API-GET] Get order list
-@router.get('/getOrdersList/')
+@router.get('/kioviet/orders/')
 async def get_orders(
     branch_ids: Optional[List[int]] = None,
     customer_ids: List[int] = None,
@@ -224,7 +224,7 @@ async def get_orders(
 
 
 # [API-GET] Get the invoice list 
-@router.get('/getInvoiceList/')
+@router.get('/kiotviet/invoices/')
 async def get_invoices(
     branch_ids: List[int] = None,
     customer_ids: List[int] = None,
