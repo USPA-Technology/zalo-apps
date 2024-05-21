@@ -46,7 +46,7 @@ class Model(BaseModel):
 class Profile(BaseModel):
     journeyMapIds: str
     dataLabels: str
-    primaryPhone: str
+    primaryPhone: Optional[str] = None
     firstName: str
 
 def map_to_profile(data: Model) -> Profile:
@@ -143,11 +143,11 @@ def map_to_profile_list(datum: Datum) -> Profile:
         firstName=datum.name
     )
 
-async def send_cdp_api(profile: Profile):
+async def send_cdp_api_list(profile: Profile):
     logger.info("Sending data to CDP API")
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url=cdp_api_url, headers=cdp_headers, json= profile.model_dump())
+            response = await client.post(url=cdp_api_url, headers=cdp_headers, json= profile)
             response.raise_for_status()
             return response.json()
     except httpx.RequestError as e:
@@ -172,14 +172,14 @@ async def get_customer_list():
 
             # Adjust the mapping to fit the actual response structure
             customers = ModelCustomers(**client_data)
-            profiles = [map_to_profile(datum) for datum in customers.data]
+            profiles = [map_to_profile(datum).model_dump() for datum in customers.data]
             print(profiles)
             # Send profiles in batches
             batch_size = 1
             results = []
             for i in range(0, len(profiles), batch_size):
                 batch = profiles[i:i + batch_size]
-                result = await send_cdp_api(batch)
+                result = await send_cdp_api_list(batch)
                 results.append(result)
                 print(results)
             return results

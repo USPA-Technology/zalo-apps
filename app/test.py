@@ -45,26 +45,26 @@
 #     env_file.writelines(lines)
 
 
-from contextlib import asynccontextmanager
+# from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+# from fastapi import FastAPI
 
-def fake_answer_to_everything_m1_model(x: float):
-    return x * 42
+# def fake_answer_to_everything_m1_model(x: float):
+#     return x * 42
 
-m1_models = {}
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Load the ML model
-    m1_models["answer_to_everything"] = fake_answer_to_everything_m1_model
+# m1_models = {}
 
 
-from threading import Thread
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     # Load the ML model
+#     m1_models["answer_to_everything"] = fake_answer_to_everything_m1_model
 
 
-# create a new daemon thread
-thread = Thread(...)
-# configure the thread to be a daemon thread
-thread.daemon = True
+# from threading import Thread
+
+
+# # create a new daemon thread
+# thread = Thread(...)
+# # configure the thread to be a daemon thread
+

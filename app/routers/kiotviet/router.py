@@ -34,7 +34,7 @@ router  = APIRouter(tags=['KiotViet-Connect'])
 
 
 # [WEBHOOK] - Order Update
-@router.post("kiotviet/webhook/{secret}")
+@router.post("kiotviet/order/webhook/{secret}")
 async def receive_webhook(data: ModelKiotViet, secret: str):
     if not is_valid_signature(secret, signature):
         raise HTTPException(status_code=400, detail="Invalid signature")

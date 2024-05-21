@@ -42,3 +42,5 @@ async def root(request: Request):
 async def zalo_verifier(request: Request):
     data = {"request": request}
     return templates.TemplateResponse("zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", data)
+
+
