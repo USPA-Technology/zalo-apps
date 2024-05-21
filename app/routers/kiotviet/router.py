@@ -16,10 +16,9 @@ from core.config import (SECRET_KEY_WEBHOOK,
                             ACCESS_TOKEN_KIOTVIET, RETAILER,
                             )
 
-import celery.states
-from celery.result import AsyncResult
-from worker.celery_app import celery_app
-from worker.celery_worker import long_task, send_cdp_api
+# from celery.result import AsyncResult
+# from worker.celery_app import celery_app
+# from worker.celery_worker import long_task, send_cdp_api
 
 
 if TYPE_CHECKING:
@@ -83,7 +82,7 @@ async def get_customer_info(client_code: str):
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, headers=headers)
             client_detail = response.json()
-            return send_cdp_api(client_detail)
+            return client_detail
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
 
