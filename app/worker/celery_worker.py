@@ -25,8 +25,6 @@ async def long_async_task():
         await asyncio.sleep(1)
 
 
-
-
 headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "*",
