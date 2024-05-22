@@ -10,7 +10,7 @@ class Profile(BaseModel):
     journeyMapIds: str
     dataLabels: str
     crmRefId: Optional[str] = None
-    governmentIssuedIDs: str
+    governmentIssuedIDs: str = None
     primaryAvatar: Optional[str] = None
     primaryEmail: Optional[str] = None
     secondaryEmails: Optional[str] = None
@@ -18,7 +18,7 @@ class Profile(BaseModel):
     secondaryPhones: Optional[str] = None
     firstName: Optional[str] = None
     middleName: Optional[str] = None
-    lastName: str
+    lastName: str = None
     gender: Optional[str] = None  # or female
     dateOfBirth: Optional[str] = None  # yyyy-MM-dd
     livingLocation: Optional[str] = None  # the address of customer

@@ -10,8 +10,11 @@ load_dotenv(override=True)
 ARANGODB_USERNAME = os.getenv("ARANGODB_USERNAME")
 ARANGODB_PASSWORD = os.getenv("ARANGODB_PASSWORD")
 
+# [CDP-URL]
+CDP_URL_PROFILE_SAVE = os.getenv("CDP_URL_PROFILE_SAVE")
+CDP_URL_EVENT_SAVE = os.getenv("CDP_URL_EVENT_SAVE")
 
-# Access Token of Zalo OA
+# [ZALO OA - ENV ]
 ACCESS_TOKEN_ZALO = os.getenv("ACCESS_TOKEN")
 REFRESH_TOKEN_ZALO = os.getenv("REFRESH_TOKEN")
 APP_ID_ZALO = os.getenv("APP_ID")
@@ -23,6 +26,10 @@ RETAILER = os.getenv("RETAILER")
 TOKEN_KEY_CDP_KiotViet = os.getenv("TOKEN_KEY_CDP_KiotViet")
 TOKEN_VALUE_CDP_KiotViet = os.getenv("TOKEN_VALUE_CDP_KiotViet")
 
+# [OmiCall - ENV]
+ACCESS_TOKEN_OMICALL= os.getenv("ACCESS_TOKEN_OMICALL")
+TOKEN_KEY_CDP_OMICALL= os.getenv("TOKEN_KEY_CDP_OMICALL")
+TOKEN_VALUE_CDP_OMICALL= os.getenv("TOKEN_VALUE_CDP_OMICALL")
 
 # Secret for Webhook
 SECRET_KEY_WEBHOOK = os.getenv("SECRET_KEY_WEBHOOK")
