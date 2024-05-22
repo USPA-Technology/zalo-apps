@@ -158,6 +158,163 @@ class ModelCustomers(BaseModel):
     key_enabled: Optional[bool] = None
     status_code: Optional[int] = None
 
+
+
+#[Response Model Validator] - Receive a list of call history
+
+class UserItemCallHistory(BaseModel):
+    full_name: str
+    full_name_unsigned: str
+    note: Any
+    tag: Any
+
+
+class CreateByCallHistory(BaseModel):
+    id: Any
+    name: str
+    contact_id: Any
+    avatar: Any
+    gender: Any
+    uuid: Any
+    type: Any
+
+
+class ItemCallHistory(BaseModel):
+    transaction_id: str
+    tenant_id: str
+    direction: str
+    source_number: str
+    destination_number: str
+    disposition: str
+    bill_sec: int
+    record_seconds: int
+    time_start_to_answer: int
+    recording_file: Any
+    recording_file_url: Any
+    recording_data: Any
+    sip_user: str
+    created_date: int
+    last_updated_date: Any
+    is_auto_call: bool
+    ivr: str
+    provider: str
+    duration: int
+    user: List[UserItemCallHistory]
+    customer: Any
+    state: Any
+    call_uuid: Any
+    from_number: str
+    to_number: str
+    hotline: str
+    is_have_forward_out: bool
+    bill_sec_forward_out: Any
+    call_out_price: Optional[int] = None 
+    note: str
+    tag: List
+    invite_failure_status: Any
+    answer_sec: int
+    autocall_uuid: Any
+    sip_number: str
+    phone_number: str
+    create_by: CreateByCallHistory
+    transfer_histories: List
+    user_data_str: Any
+    user_ref_code: Any
+    endby_name: str
+    hangup_cause: str
+    sip_hangup_disposition: str
+    hangup_cause_q850: int
+    is_voicemail: bool
+    recording_file_voicemail: Any
+    domain_fusion: str
+    send_num_retry: int
+    time_start_call: int
+    time_end_call: int
+    out_of_working_time: bool
+    sip_number_tags: Any
+    evaluations: Any
+    total_evaluate: Any
+    internal_destination: Any
+    classifies: Any
+
+
+class PayloadCallHistory(BaseModel):
+    next_page: int
+    page_number: int
+    has_previous: bool
+    has_next: bool
+    total_pages: int
+    previous_page: int
+    items: List[ItemCallHistory]
+    total_items: int
+    page_size: int
+
+
+class ModelCallHistory(BaseModel):
+    instance_id: Optional[str] = None
+    payload: Optional[PayloadCallHistory] = None
+    instance_version: Optional[str] = None
+    key_enabled: Optional[bool] = None
+    status_code: Optional[int] = None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # import json
 
 # # Dữ liệu JSON response

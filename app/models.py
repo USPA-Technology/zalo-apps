@@ -3,7 +3,7 @@ Using Pydantic define Model of Customer Data
 """
 
 from pydantic import BaseModel
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 
 class Profile(BaseModel):
@@ -38,8 +38,17 @@ class Profile(BaseModel):
     extAttributes: Optional[Dict[str, str]] = None
     incomeHistory: Optional[Dict[str, int]] = None
 
+class Eventdata(BaseModel):
+    itemtId: str
+    idType: str
+    quantity: int
+
+
 class Event(BaseModel):
-    eventId: str
-    eventType: str
-    eventTime: str
-    eventData: Dict[str, str]
+    targetUpdatePhone: Optional[str] = None
+    tpname: Optional[str] = None
+    tpurl: Optional[str] = None
+    tprefurl: Optional[str] = None
+    eventdata: Optional[Eventdata] = None
+    imageUrls: Optional[str] = None
+    metric: Optional[str] = None

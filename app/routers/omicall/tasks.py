@@ -26,7 +26,7 @@ cdp_headers = {
 }
 
 
-def covert_customer_data_mapping(item: Item) -> Profile:
+def convert_customer_data_mapping(item: Item) -> Profile:
     data_dict = {}
     attribute_structures = item.attribute_structure
     for attribute in attribute_structures:
@@ -49,9 +49,10 @@ def covert_customer_data_mapping(item: Item) -> Profile:
     )
 
 
+
 async def send_cdp_api(data: Item):
     logger.info("Process mapping data")
-    result = covert_customer_data_mapping(data).model_dump()
+    result = convert_customer_data_mapping(data).model_dump()
     print(result)
     try:
         async with httpx.AsyncClient() as client:
