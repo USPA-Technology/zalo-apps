@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, Any  
 
 from pydantic import BaseModel
 
@@ -246,32 +246,8 @@ class RespInvoiceList(BaseModel):
     data: List[DatumInvoices]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class OrderDetail(BaseModel):
+# [WEBHOOK] Response Model Order Update KiotViet
+class WebhookOrderDetail(BaseModel):
     ProductId: str
     ProductCode: str
     ProductName: str
@@ -280,7 +256,7 @@ class OrderDetail(BaseModel):
     Discount: str
     DiscountRatio: str
 
-class Datum(BaseModel):
+class WebhookDatumOrder(BaseModel):
     Id: str
     Code: str
     PurchaseDate: str
@@ -299,23 +275,22 @@ class Datum(BaseModel):
     Description: str
     UsingCod: str
     ModifiedDate: str
-    OrderDetails: List[OrderDetail]
+    OrderDetails: List[WebhookOrderDetail]
 
 
-class Notification(BaseModel):
+class WebhookNotificationOrder(BaseModel):
     Action: str
-    Data: List[Datum]
+    Data: List[WebhookDatumOrder]
 
 
-class ModelKiotViet(BaseModel):
+class WebhookOrder(BaseModel):
     Id: str
     Attempt: str
-    Notifications: List[Notification]
+    Notifications: List[WebhookNotificationOrder]
 
 
-# Model Customer KiotViet
-
-class DatumCustomer(BaseModel):
+# [WEBHOOK] Response Model Customer Update KiotViet
+class WebhookDatumCustomer(BaseModel):
     Id: int
     Code: str
     Name: str
@@ -332,13 +307,98 @@ class DatumCustomer(BaseModel):
     Comments: str
 
 
-class Notification(BaseModel):
+class WebhookNotificationCustomer(BaseModel):
     Action: str
-    Data: List[DatumCustomer]
+    Data: List[WebhookDatumCustomer]
 
 
-class ModelCustomer(BaseModel):
+class WebhookCustomer(BaseModel):
     Id: str
     Attempt: int
-    Notifications: List[Notification]
+    Notifications: List[WebhookNotificationCustomer]
 
+# [WEBHOOK] Response Model Invoice Update KiotViet
+class WebhookPartnerDelivery(BaseModel):
+    Code: str
+    Name: str
+    ContactNumber: str
+    Address: str
+    Email: str
+
+
+class WebhookInvoiceDelivery(BaseModel):
+    DeliveryCode: str
+    Status: int
+    StatusValue: str
+    Type: Any
+    Price: float
+    Receiver: str
+    ContactNumber: str
+    Address: str
+    LocationId: Any
+    LocationName: str
+    Weight: float
+    Length: float
+    Width: float
+    Height: float
+    PartnerDeliveryId: Any
+    PartnerDelivery: WebhookPartnerDelivery
+
+
+class WebhookInvoiceDetail(BaseModel):
+    ProductId: int
+    ProductCode: str
+    ProductName: str
+    Quantity: float
+    Price: float
+    Discount: Any
+    DiscountRatio: float
+
+
+class WebhookPayment(BaseModel):
+    Id: int
+    Code: str
+    Amount: float
+    AccountId: Any
+    BankAccount: str
+    Description: str
+    Method: str
+    Status: Any
+    StatusValue: str
+    TransDate: str
+
+
+class WebhookDatumInvoice(BaseModel):
+    Id: int
+    Code: str
+    PurchaseDate: str
+    BranchId: int
+    BranchName: str
+    SoldById: int
+    SoldByName: str
+    CustomerId: Any
+    CustomerCode: str
+    CustomerName: str
+    Total: float
+    TotalPayment: float
+    Discount: Any
+    DiscountRatio: float
+    Status: int
+    StatusValue: str
+    Description: str
+    UsingCod: bool
+    ModifiedDate: Any
+    InvoiceDelivery: WebhookInvoiceDelivery
+    InvoiceDetails: List[WebhookInvoiceDetail]
+    Payments: List[WebhookPayment]
+
+
+class WebHookNotificationInvoice(BaseModel):
+    Action: str
+    Data: List[WebhookDatumInvoice]
+
+
+class WebHookInvoice(BaseModel):
+    Id: str
+    Attempt: int
+    Notifications: List[WebHookNotificationInvoice]

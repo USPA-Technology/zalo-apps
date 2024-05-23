@@ -10,7 +10,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Depends, FastAPI, HTTPException
 from routers import router
 
-from worker import create_task
+# from worker import create_task
 from celery.result import AsyncResult
 
 DEV_MODE = os.getenv("DEV_MODE") == "true"
@@ -18,7 +18,7 @@ HOSTNAME = os.getenv("HOSTNAME")
 FOLDER_RESOURCES = os.path.dirname(os.path.abspath(__file__)) + "/resources/"
 FOLDER_TEMPLATES = FOLDER_RESOURCES + "templates"
 
-# init FAST API zaloapp
+# init FAST API app
 app = FastAPI()
 app.include_router(router)
 
@@ -61,3 +61,4 @@ async def zalo_verifier(request: Request):
 #         "task_result": task_result.result
 #     }
 #     return JSONResponse(result)
+

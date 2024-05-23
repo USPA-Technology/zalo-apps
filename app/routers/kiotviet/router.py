@@ -5,7 +5,7 @@ import json
 from typing import TYPE_CHECKING, Annotated, List, Optional
 
 from .schema import (
-                     ModelCustomer, ModelKiotViet,
+                     WebhookCustomer, WebhookOrder, WebHookInvoice,
                      RespCustomerList,
                      RespOrderList,
                      RespInvoiceList
@@ -16,38 +16,15 @@ from core.config import (SECRET_KEY_WEBHOOK,
                             ACCESS_TOKEN_KIOTVIET, RETAILER,
                             )
 
-# from celery.result import AsyncResult
-# from worker.celery_app import celery_app
-# from worker.celery_worker import long_task, send_cdp_api
-
-
-if TYPE_CHECKING:
-    from celery import Task
-    long_task: Task
-
 signature = SECRET_KEY_WEBHOOK
 retailer = RETAILER
 
-router  = APIRouter(tags=['KiotViet-Connect'])
+router  = APIRouter(tags=['KiotViet'])
 
 
-
-# [WEBHOOK] - Order Update
-@router.post("kiotviet/order/webhook/{secret}")
-async def receive_webhook(data: ModelKiotViet, secret: str):
-    if not is_valid_signature(secret, signature):
-        raise HTTPException(status_code=400, detail="Invalid signature")
-    try:
-        model_data = data.model_dump()
-        return {"message": "Webhook received", "data": model_data}
-    except ValidationError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal Server Error")
-    
 # [WEBHOOK] - Customer Update
 @router.post("/kiotviet/customer/webhook/{secret}")
-async def receive_webhook_customer_update(data: ModelCustomer, secret: str):
+async def receive_webhook_customer(data: WebhookCustomer, secret: str):
     if not is_valid_signature(secret, signature):
         raise HTTPException(status_code=400, detail="Invalid signature")
     try:
@@ -57,7 +34,33 @@ async def receive_webhook_customer_update(data: ModelCustomer, secret: str):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
-    
+
+# [WEBHOOK] - Order Update
+@router.post("/kiotviet/order/webhook/{secret}")
+async def receive_webhook_order(data: WebhookOrder, secret: str):
+    if not is_valid_signature(secret, signature):
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    try:
+        model_data = data.model_dump()
+        return {"message": "Webhook received", "data": model_data}
+    except ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+ 
+ # [WEBHOOK] - Invoice Update
+@router.post("/kiotviet/invoice/webhook/{secret}")
+async def receive_webhook_invoice(data: WebHookInvoice, secret: str):
+    if not is_valid_signature(secret, signature):
+        raise HTTPException(status_code=400, detail="Invalid signature")
+    try:
+        model_data = data.model_dump()
+        return {"message": "Webhook received", "data": model_data}
+    except ValidationError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+ 
     
 # [API-GET] Get information about customer
 @router.get('/kiotviet/customer/{client_code}')
@@ -88,7 +91,7 @@ async def get_customer_info(client_code: str):
 
 
 # [API-GET] Get the customer list
-@router.get('/kioviet/customers')
+@router.get('/kiotviet/customers')
 async def get_customers(
     code: str = None,
     name: str = None,
@@ -156,7 +159,7 @@ async def get_customers(
     
     
 # [API-GET] Get order list
-@router.get('/kioviet/orders/')
+@router.get('/kiotviet/orders/')
 async def get_orders(
     branch_ids: Optional[List[int]] = None,
     customer_ids: List[int] = None,

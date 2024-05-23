@@ -5,15 +5,12 @@ from dependencies import (is_valid_signature,
                           date_to_timestamp
                           )
 from core.config import (SECRET_KEY_WEBHOOK,
-                         ACCESS_TOKEN_OMICALL,
-                         TOKEN_KEY_CDP_OMICALL,TOKEN_VALUE_CDP_OMICALL,
-                         CDP_URL_PROFILE_SAVE, CDP_URL_EVENT_SAVE
-                         )
+                         ACCESS_TOKEN_OMICALL,)
 from .schema import (WebhookModelCall,
                      ModelCustomers, ModelCallHistory,
                      )
-from .tasks import (
-                    send_cdp_api)
+from .tasks import (send_cdp_api_profile,
+                    send_cdp_api_event)
 
 signature = SECRET_KEY_WEBHOOK
 access_token = ACCESS_TOKEN_OMICALL
@@ -22,8 +19,8 @@ router = APIRouter(tags=["OmiCall"])
 
 
 # [WEBHOOK] - Get data call 
-@router.post("/omicall/customer/webhook/{secret}")
-async def receive_webhook(data: WebhookModelCall, secret: str):
+@router.post("/omicall/call/webhook/{secret}")
+async def receive_webhook_call(data: WebhookModelCall, secret: str):
     if not is_valid_signature(secret, signature):
         raise HTTPException(status_code=400, detail="Invalid signature")
     try:
@@ -44,7 +41,7 @@ async def get_customer_list():
     }
     params = {
         "page": 1,
-        "size": 3
+        "size": 1
     }
     payloads = {
         "some_key": "some_value"  
@@ -58,7 +55,7 @@ async def get_customer_list():
             items = customers.payload.items
             if items:
                 for item in items:
-                    await send_cdp_api(item)
+                    await send_cdp_api_profile(item)
             return {"message": "Takes have been queud."}
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
@@ -76,7 +73,7 @@ async def get_call_history_list():
     }
     params = {
         "page": 1,
-        "size": 100,
+        "size": 1,
         "from_date": date_to_timestamp("20/04/2024"),
         "to_date": date_to_timestamp("30/04/2024"),
     }
@@ -90,11 +87,10 @@ async def get_call_history_list():
             results = response.json()
             calls = ModelCallHistory(**results)
             items = calls.payload.items
-            # if items:
-            #     for item in items:
-            #         # await send_cdp_api(item)
-            #         print(items)
-            return items
+            if items:
+                for item in items:
+                    await send_cdp_api_event(item)
+            return {"message": "Takes have been queud."}
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
     except httpx.RequestError as e:

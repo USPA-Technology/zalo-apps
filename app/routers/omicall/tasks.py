@@ -6,10 +6,9 @@ from pydantic import ValidationError
 import logging
 
 from models import Profile, Event
-from .schema import ModelCustomers, Item
+from .schema import ItemCustomer, ItemCallHistory
 
-
-from core.config import (TOKEN_KEY_CDP_KiotViet, TOKEN_VALUE_CDP_KiotViet,
+from core.config import (TOKEN_KEY_CDP_OMICALL, TOKEN_VALUE_CDP_OMICALL,
                          CDP_URL_PROFILE_SAVE, CDP_URL_EVENT_SAVE)
 
 logger = logging.getLogger(__name__)
@@ -21,12 +20,12 @@ cdp_api_url_event_save = CDP_URL_EVENT_SAVE
 cdp_headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "*",
-    "tokenkey": TOKEN_KEY_CDP_KiotViet,
-    "tokenvalue": TOKEN_VALUE_CDP_KiotViet
+    "tokenkey": TOKEN_KEY_CDP_OMICALL,
+    "tokenvalue": TOKEN_VALUE_CDP_OMICALL
 }
 
-
-def convert_customer_data_mapping(item: Item) -> Profile:
+# Process data for profiles
+def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
     data_dict = {}
     attribute_structures = item.attribute_structure
     for attribute in attribute_structures:
@@ -35,144 +34,63 @@ def convert_customer_data_mapping(item: Item) -> Profile:
         if values:
             display_value = values[0].display_value
             data_dict[field_code] = display_value
-                        
+                                
     return Profile (
-    journeyMapIds = "4vBUFB4rbehETPIlAXJ4Bd",
-    dataLabels = "OmiCall",
-    primaryEmail = data_dict.get("mail"),
-    primaryPhone = data_dict.get("phone_number"),
-    firstName = data_dict.get("full_name"),
-    gender = data_dict.get("gender"),
-    dateOfBirth = data_dict.get("birth_date"),
-    livingLocation = data_dict.get("address"),
-    jobTitles = data_dict.get("job_title"),
+        journeyMapIds = "4vBUFB4rbehETPIlAXJ4Bd",
+        dataLabels = "OmiCall",
+        primaryEmail = data_dict.get("mail"),
+        primaryPhone = data_dict.get("phone_number"),
+        firstName = data_dict.get("full_name"),
+        gender = data_dict.get("gender"),
+        dateOfBirth = data_dict.get("birth_date"),
+        livingLocation = data_dict.get("address"),
+        jobTitles = data_dict.get("job_title"),
+            )
+
+# Process data for events
+def convert_event_data_mapping(item: ItemCallHistory) -> Event:
+    return Event (
+        targetUpdateEmail= "nguyenngocbaolamcva2020@gmail.com",
+        tpname = item.direction,
+        eventdata = {
+            "transaction_id": item.transaction_id,
+            "tenant_id": item.tenant_id,
+            "source_number": item.source_number,
+            "destination_number": item.destination_number,
+            "hotline": item.hotline,
+            "note": item.note,
+            "created_date": item.created_date,
+            "customer": item.customer,
+        },
+        metric = "qr-code-scan",
     )
-
-
-
-async def send_cdp_api(data: Item):
-    logger.info("Process mapping data")
+    
+# Send profile data to CDP
+async def send_cdp_api_profile(data: ItemCustomer):
+    logger.info("Processing send data")
     result = convert_customer_data_mapping(data).model_dump()
     print(result)
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=result)
             client_detail = response.json()
+            print(client_detail)
             return client_detail
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
 
-       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def map_to_profile_list(data: ModelCustomers) -> Profile:
-    info = {}
-    try:
-        instance_id = data.instance_id
-        payload = data.payload
-        items  = payload.items
-        
-        for item in items:
-            contact_type = item.contact_type
-            created_by_name = item.create_by
-            last_update_by = item.last_update_by
-            attribute_structures = item.attribute_structure
-            
-            for attribute in attribute_structures:
-                field_code = attribute.field_code
-                if attribute[value]:
-                    info[field_code] = attribute[value][0][display_value]
-                else:
-                    info[field_code] = None
-                values = attribute.value
-                for value in values:
-                    display_value = value.display_value
-    except ValidationError as e:
-        print(e.json)
-        
-        
-        
-        
-# Hàm get_contact_info sẽ trích xuất thông tin từ một mục liên hệ
-def get_contact_info(item):
-    info = {}
-    for attribute in item['attribute_structure']:
-        field_code = attribute['field_code']
-        if attribute['value']:
-            info[field_code] = attribute['value'][0]['display_value']
-        else:
-            info[field_code] = None
-    return info
-
-    return Profile(
-    journeyMapIds = "value journeymap ids",
-    dataLabels = "OmiCall",
-    primaryEmail = datum.source_contact_id
-
-    )
-
-
-
-async def send_cdp_profile(profile: Profile):
-    logger.info("Sending data to CDP API")
+    
+# Send event data to CDP
+async def send_cdp_api_event(data: ItemCallHistory):
+    logger.info("Processing send data")
+    result = convert_event_data_mapping(data).model_dump()
+    print(result)
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url=cdp_api_url_profile_save, headers=cdp_headers, json= profile)
-            response.raise_for_status()
-            return response.json()
+            response = await client.post(url=cdp_api_url_event_save, headers=cdp_headers, json=json.dumps(result))
+            event_detail = response.json()
+            print(event_detail)
+            return event_detail
     except httpx.RequestError as e:
-        raise HTTPException(status_code=500, detail=f"Error connecting to CDP: {e}")
-    except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=e.response.status_code, detail=f"Error from CDP: {e.response.json()}")
-
-
-from typing import Dict, Any
-
-
-
-# Hàm chuyển đổi model
-def convert_model_to_dict(model: ModelCustomers) -> Dict[str, Any]:
-    data_dict = {}
-    payload = model.payload
-    if payload:
-        items = payload.items
-        for item in items:
-            attribute_structures = item.attribute_structure
-            for attribute in attribute_structures:
-                field_code = attribute.field_code
-                values = attribute.value
-                if values:
-                    display_value = values[0].display_value
-                    data_dict[field_code] = display_value
-    return Profile (
-        
-    )
-
-
-
-
-
-# # Sử dụng hàm convert_model_to_dict để chuyển đổi dữ liệu
-# model_data = ModelCustomers(**your_data_dict)
-# result_dict = convert_model_to_dict(model_data)
-
-# # In ra kết quả
-# print(result_dict)
-
+        raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
 

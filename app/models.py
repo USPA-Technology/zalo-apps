@@ -38,17 +38,37 @@ class Profile(BaseModel):
     extAttributes: Optional[Dict[str, str]] = None
     incomeHistory: Optional[Dict[str, int]] = None
 
-class Eventdata(BaseModel):
-    itemtId: str
-    idType: str
-    quantity: int
+# class EventData(BaseModel):
+#     itemtId: Optional[str] = None
+#     idType: Optional[str] = None
+#     quantity: Optional[str] = None
 
 
 class Event(BaseModel):
+    targetUpdateEmail: Optional[str] = None
     targetUpdatePhone: Optional[str] = None
     tpname: Optional[str] = None
     tpurl: Optional[str] = None
     tprefurl: Optional[str] = None
-    eventdata: Optional[Eventdata] = None
+    eventdata: Optional[Dict] = None
     imageUrls: Optional[str] = None
     metric: Optional[str] = None
+
+
+class EventDataCall(BaseModel):
+    transaction_id: Optional[str] = None
+    tenant_id: Optional[str] = None
+    direction: Optional[str] = None
+    source_number: Optional[str] = None
+    destination_number: Optional[str] = None
+    disposition: Optional[str] = None
+    duration: Optional[str] = None
+    time_start_to_answer: Optional[str] = None
+    provider: Optional[str] = None
+    created_date: Optional[str] = None
+    endby_name: Optional[str] = None
+    hangup_cause: Optional[str] = None
+    
+    
+    
+    

@@ -113,47 +113,47 @@ class ContactCategoriesViewItem(BaseModel):
     ref_id: Any
 
 
-class Item(BaseModel):
+class ItemCustomer(BaseModel):
     id: str
     contact_type: str
     create_by: CreateBy
     last_update_by: LastUpdateBy
     created_date: int
     last_updated_date: int
-    tenant_id: str
-    source_contact_id: str
-    public_id: str
+    tenant_id: Optional[str] = None
+    source_contact_id: Optional[str] = None
+    public_id: Optional[str] = None
     user_owner_id: str
     attribute_structure: List[AttributeStructureItem]
-    tags: List
+    tags: Optional[List] = None
     business_type: List
     contact_categories: List[str]
-    filter_contacts: List
+    filter_contacts: Optional[List] = None
     total_interactive: int
-    related_employee: List
+    related_employee: Optional[List] = None
     ref_id: str
     ref_code: str
-    tags_view: List
-    business_type_view: List
+    tags_view: Optional[List] = None
+    business_type_view: Optional[List] = None
     contact_categories_view: List[ContactCategoriesViewItem]
 
 
-class Payload(BaseModel):
-    items: List[Item]
-    page_number: int
-    page_size: int
-    total_items: int
-    total_pages: int
+class PayloadCustomer(BaseModel):
+    items: List[ItemCustomer]
+    page_number: Optional[int] = None
+    page_size: Optional[int] = None
+    total_items: Optional[int] = None
+    total_pages: Optional[int] = None
     has_next: bool
-    next_page: int
+    next_page: Optional[int] = None
     has_previous: bool
-    previous_page: int
+    previous_page: Optional[int] = None
     extension: Any
 
 
 class ModelCustomers(BaseModel):
     instance_id: Optional[str] = None
-    payload: Optional[Payload] = None
+    payload: Optional[PayloadCustomer] = None
     instance_version: Optional[str] = None
     key_enabled: Optional[bool] = None
     status_code: Optional[int] = None
@@ -161,7 +161,6 @@ class ModelCustomers(BaseModel):
 
 
 #[Response Model Validator] - Receive a list of call history
-
 class UserItemCallHistory(BaseModel):
     full_name: str
     full_name_unsigned: str
@@ -262,225 +261,3 @@ class ModelCallHistory(BaseModel):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# import json
-
-# # Dữ liệu JSON response
-# data = {
-#     "instance_id": "stg",
-#     "payload": {
-#         "items": [
-#             {
-#                 "id": "622178ce7c56273236e79983",
-#                 "contact_type": "contact",
-#                 "create_by": {"id": "61adb1732108e22624a508cc", "name": "Ms.Vân"},
-#                 "last_update_by": {"id": "61adb1732108e22624a508cc", "name": "Ms.Vân", "action": "excel"},
-#                 "created_date": 1646360352433,
-#                 "last_updated_date": 1665480003022,
-#                 "tenant_id": "61adb1732108e22624a508c9",
-#                 "source_contact_id": "61adb81c69e1322e7cef45c4",
-#                 "public_id": "40722396-d239-4dc6-b2f9-737913f19d7e1647011523532",
-#                 "user_owner_id": "61adb81c69e1322e7cef45b9",
-#                 "attribute_structure": [
-#                     {
-#                         "identify": False,
-#                         "attribute_id": "664d57c89748c37d2b35c258",
-#                         "field_code": "full_name",
-#                         "field_type": "single_text",
-#                         "function": None,
-#                         "formula": None,
-#                         "data_format": None,
-#                         "value": [
-#                             {
-#                                 "value_id": "664d57c89748c37d2b35c259",
-#                                 "display_value": "Nguyễn Thị Hải Yến",
-#                                 "data_type": "",
-#                                 "value_type": "",
-#                                 "actual_value": None,
-#                                 "quantity_value": None,
-#                                 "currency": None,
-#                                 "ref_id": None,
-#                                 "list_evaluation": None,
-#                                 "country_code": None
-#                             }
-#                         ],
-#                         "is_memory": None
-#                     },
-#                     {
-#                         "identify": False,
-#                         "attribute_id": "664d57c89748c37d2b35c25e",
-#                         "field_code": "phone_number",
-#                         "field_type": "phone",
-#                         "function": None,
-#                         "formula": None,
-#                         "data_format": None,
-#                         "value": [
-#                             {
-#                                 "value_id": "664d57c89748c37d2b35c25f",
-#                                 "display_value": "0376817493",
-#                                 "data_type": "personal",
-#                                 "value_type": "Cá nhân",
-#                                 "actual_value": None,
-#                                 "quantity_value": None,
-#                                 "currency": None,
-#                                 "ref_id": None,
-#                                 "list_evaluation": None,
-#                                 "country_code": None
-#                             }
-#                         ],
-#                         "is_memory": None
-#                     },
-#                     {
-#                         "identify": False,
-#                         "attribute_id": "664d57c89748c37d2b35c262",
-#                         "field_code": "address",
-#                         "field_type": "single_text",
-#                         "function": None,
-#                         "formula": None,
-#                         "data_format": None,
-#                         "value": [
-#                             {
-#                                 "value_id": "664d57c89748c37d2b35c263",
-#                                 "display_value": "162 phương liệt ,thanh xuân,hà nôi, Phường Phương Liệt, Quận Thanh Xuân, Hà Nội",
-#                                 "data_type": "",
-#                                 "value_type": "",
-#                                 "actual_value": None,
-#                                 "quantity_value": None,
-#                                 "currency": None,
-#                                 "ref_id": None,
-#                                 "list_evaluation": None,
-#                                 "country_code": None
-#                             }
-#                         ],
-#                         "is_memory": None
-#                     }
-#                 ],
-#                 "tags": [],
-#                 "business_type": [],
-#                 "contact_categories": ["622060447c56273236dafb40"],
-#                 "filter_contacts": [],
-#                 "total_interactive": 0,
-#                 "related_employee": [],
-#                 "ref_id": "7306356",
-#                 "ref_code": "KHSPE211015VCFH95WP",
-#                 "tags_view": [],
-#                 "business_type_view": [],
-#                 "contact_categories_view": [
-#                     {
-#                         "id": "622060447c56273236dafb40",
-#                         "name": "Online",
-#                         "type": "contact",
-#                         "types": None,
-#                         "parent_id": None,
-#                         "parent_name": None,
-#                         "level": 1,
-#                         "color": None,
-#                         "ref_id": None
-#                     }
-#                 ]
-#             }
-#         ],
-#         "page_number": 1,
-#         "page_size": 50,
-#         "total_items": 53615,
-#         "total_pages": 1073,
-#         "has_next": True,
-#         "next_page": 2,
-#         "has_previous": False,
-#         "previous_page": 1,
-#         "extension": None
-#     },
-#     "instance_version": "1.2.164",
-#     "key_enabled": False,
-#     "status_code": 9999
-# }
-
-# def get_contact_info(item):
-#     info = {}
-#     for attribute in item['attribute_structure']:
-#         field_code = attribute['field_code']
-#         if attribute['value']:
-#             info[field_code] = attribute['value'][0]['display_value']
-#         else:
-#             info[field_code] = None
-#     return info
-
-# # Lấy thông tin từ items
-# contacts = data['payload']['items']
-# for contact in contacts:
-#     contact_info = get_contact_info(contact)
-#     print(contact_info)
-
-# # Hàm get_contact_info sẽ trích xuất thông tin từ một mục liên hệ
-# def get_contact_info(item):
-#     info = {}
-#     for attribute in item['attribute_structure']:
-#         field_code = attribute['field_code']
-#         if attribute['value']:
-#             info[field_code] = attribute['value'][0]['display_value']
-#         else:
-#             info[field_code] = None
-#     return info
-
-# # Lấy thông tin từ items
-# contacts = data['payload']['items']
-# for contact in contacts:
-#     contact_info = get_contact_info(contact)
-#     print(contact_info)
-    
-    
-    
-# model = ModelCustomers(**data)
-# print(model.model_dump())
