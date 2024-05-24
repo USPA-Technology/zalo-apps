@@ -41,10 +41,10 @@ async def get_customer_list():
     }
     params = {
         "page": 1,
-        "size": 1
+        "size": 3
     }
     payloads = {
-        "some_key": "some_value"  
+        "keyword": "0989580605"  
     }
     try:
         async with httpx.AsyncClient() as client:
@@ -95,5 +95,40 @@ async def get_call_history_list():
         raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connecting to OmiCall: {e}")
+
+
+
+# [API-GET] Receive a list of tickets
+@router.get('/omicall/tickets/')
+async def get_call_history_list():
+    api_url = "https://public-v1-stg.omicall.com/api/call_transaction/list"
+    headers = {
+        "Authorization": access_token
+    }
+    params = {
+        "page": 1,
+        "size": 1,
+        "from_date": date_to_timestamp("20/04/2024"),
+        "to_date": date_to_timestamp("30/04/2024"),
+    }
+    payloads = {
+        "some_key": "some_value"  
+    }
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url=api_url, headers=headers, params=params)
+            response.raise_for_status()
+            results = response.json()
+            calls = ModelCallHistory(**results)
+            items = calls.payload.items
+            if items:
+                for item in items:
+                    await send_cdp_api_event(item)
+            return {"message": "Takes have been queud."}
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Error connecting to OmiCall: {e}")
+
 
 

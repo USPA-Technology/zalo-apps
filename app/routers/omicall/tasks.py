@@ -68,11 +68,11 @@ def convert_event_data_mapping(item: ItemCallHistory) -> Event:
 # Send profile data to CDP
 async def send_cdp_api_profile(data: ItemCustomer):
     logger.info("Processing send data")
-    result = convert_customer_data_mapping(data).model_dump()
+    result = convert_customer_data_mapping(data)
     print(result)
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=result)
+            response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=result.model_dump())
             client_detail = response.json()
             print(client_detail)
             return client_detail
@@ -93,4 +93,3 @@ async def send_cdp_api_event(data: ItemCallHistory):
             return event_detail
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
-

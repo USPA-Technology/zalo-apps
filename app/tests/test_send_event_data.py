@@ -2,7 +2,6 @@ import http.client
 import json
 
 from datetime import datetime
-from ..core.config import TOKEN_KEY_CDP_OMICALL, TOKEN_VALUE_CDP_OMICALL
 
 now = datetime.now() # current date and time
 
@@ -13,8 +12,8 @@ api_url = 'https://dcdp.bigdatavietnam.org/api/event/save'
 headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "*",
-    "tokenkey": TOKEN_KEY_CDP_OMICALL,
-    "tokenvalue": TOKEN_VALUE_CDP_OMICALL,
+    "tokenkey": '4vBUFB4rbehETPIlAXJ4Bd',
+    "tokenvalue": '6744954_VgRiAmSSOnKRDUKkCt5oD'
 }
 # print(headers)
 
@@ -27,7 +26,7 @@ formatted_datetime = now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 tracking_event = {
     # the target update profile's email
     'eventTime': '2024-05-08T10:51:25.110Z',
-    'targetUpdatePhone': "2067093400",
+    'targetUpdatePhone': "0386816313",
     'tpname': "Bộ Everon EPC-24041 thuộc bộ sưu tập 2024 - 2025",  # TOUCHPOINT_NAME
     'tpurl': "https://www.everonvn.vn/chi-tiet/everon-epc24041.html",  # TOUCHPOINT_URL
     'tprefurl': "https://google.com",  # TOUCHPOINT_REFERRER_URL
@@ -59,7 +58,7 @@ if test_metric == 'purchase' :
     tracking_event['tsid'] = transaction_id
 
 
-json_payload = json.dumps(tracking_event)
+json_payload = tracking_event
 # uri = '/api/event/save'
 # connection.request('POST', uri, json_payload, headers)
 
@@ -70,6 +69,7 @@ json_payload = json.dumps(tracking_event)
 async def send_test_api():
     try:
         async with httpx.AsyncClient() as client:
+            print(json)
             response = await client.post(url = api_url, headers=headers, json=json_payload)
             orders = response.json()
             return orders

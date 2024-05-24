@@ -13,7 +13,7 @@ class DatumCustomers(BaseModel):
     id: Optional[int] = None
     code: Optional[str] = None
     name: Optional[str] = None
-    gender: Optional[bool] = None
+    gender: Optional[bool | str] = None
     birthDate: Optional[str] = None
     contactNumber: Optional[str] = None
     address: Optional[str] = None
@@ -37,7 +37,7 @@ class RespCustomerList(BaseModel):
     total: Optional[int] = None
     pageSize: Optional[int] = None
     data: List[DatumCustomers]
-    removeId: List[int]
+    removeId: Optional[List[int]] = None
 
 
 

@@ -256,8 +256,3 @@ class ModelCallHistory(BaseModel):
     key_enabled: Optional[bool] = None
     status_code: Optional[int] = None
 
-
-
-
-
-

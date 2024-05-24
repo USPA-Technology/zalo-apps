@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import ValidationError
 import httpx
+import requests
 import json
 from typing import TYPE_CHECKING, Annotated, List, Optional
 
@@ -15,6 +16,10 @@ from dependencies import is_valid_signature
 from core.config import (SECRET_KEY_WEBHOOK,
                             ACCESS_TOKEN_KIOTVIET, RETAILER,
                             )
+from .tasks import (send_cdp_api_profile,
+                    send_cdp_api_profile_request,
+                    send_with_retries,
+                    send_cdp_api_event)
 
 signature = SECRET_KEY_WEBHOOK
 retailer = RETAILER
@@ -35,6 +40,7 @@ async def receive_webhook_customer(data: WebhookCustomer, secret: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
+
 # [WEBHOOK] - Order Update
 @router.post("/kiotviet/order/webhook/{secret}")
 async def receive_webhook_order(data: WebhookOrder, secret: str):
@@ -47,6 +53,7 @@ async def receive_webhook_order(data: WebhookOrder, secret: str):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal Server Error")
+ 
  
  # [WEBHOOK] - Invoice Update
 @router.post("/kiotviet/invoice/webhook/{secret}")
@@ -75,8 +82,7 @@ async def get_customer_info(client_code: str):
         json: Information about the customer.
     """
     api_url = f"https://public.kiotapi.com/customers/code/{client_code}"
-    access_token = ACCESS_TOKEN_KIOTVIET
-    # params={"code": client_code} 
+    access_token = ACCESS_TOKEN_KIOTVIET 
     headers = {
         "Retailer": retailer,
         "Authorization": access_token
@@ -150,11 +156,16 @@ async def get_customers(
         "groupId": group_id
     }
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(api_url, headers=headers, params=params)
-            customer_list = response.json()
-            return customer_list
-    except httpx.RequestError as e:
+        response = requests.get(api_url, headers=headers, params=params)
+        response.raise_for_status()  # Raise an HTTPError for bad responses
+        results = response.json()
+        customers = RespCustomerList(**results)
+        items = customers.data
+        if items:
+            for item in items:
+                send_with_retries(item)
+        return results
+    except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
     
     

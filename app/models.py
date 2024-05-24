@@ -3,7 +3,7 @@ Using Pydantic define Model of Customer Data
 """
 
 from pydantic import BaseModel
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Annotated
 
 
 class Profile(BaseModel):
@@ -18,8 +18,8 @@ class Profile(BaseModel):
     secondaryPhones: Optional[str] = None
     firstName: Optional[str] = None
     middleName: Optional[str] = None
-    lastName: str = None
-    gender: Optional[str] = None  # or female
+    lastName: Optional[str] = None
+    gender: Optional[str] = None
     dateOfBirth: Optional[str] = None  # yyyy-MM-dd
     livingLocation: Optional[str] = None  # the address of customer
     livingCity: Optional[str] = None  # the city where customer is living
@@ -46,7 +46,7 @@ class Profile(BaseModel):
 
 class Event(BaseModel):
     targetUpdateEmail: Optional[str] = None
-    targetUpdatePhone: Optional[str] = None
+    # targetUpdatePhone: Optional[str] = None
     tpname: Optional[str] = None
     tpurl: Optional[str] = None
     tprefurl: Optional[str] = None
