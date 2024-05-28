@@ -59,6 +59,7 @@ if test_metric == 'purchase' :
 
 
 json_payload = tracking_event
+print(json_payload)
 # uri = '/api/event/save'
 # connection.request('POST', uri, json_payload, headers)
 

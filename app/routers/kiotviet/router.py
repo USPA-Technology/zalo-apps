@@ -155,18 +155,19 @@ async def get_customers(
         "birthDate": birth_date,
         "groupId": group_id
     }
-    try:
-        response = requests.get(api_url, headers=headers, params=params)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-        results = response.json()
-        customers = RespCustomerList(**results)
-        items = customers.data
-        if items:
-            for item in items:
-                send_with_retries(item)
-        return results
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
+    while True:
+        try:
+            response = requests.get(api_url, headers=headers, params=params)
+            response.raise_for_status()  # Raise an HTTPError for bad responses
+            results = response.json()
+            customers = RespCustomerList(**results)
+            items = customers.data
+            if items:
+                for item in items:
+                    send_with_retries(item)
+            return results
+        except requests.RequestException as e:
+            raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
     
     
 # [API-GET] Get order list
@@ -232,6 +233,11 @@ async def get_orders(
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, headers=headers, params=params)
             orders = response.json()
+            orders_model = RespOrderList(**orders)
+            items = orders_model.data
+            if items:
+                for item in items:
+                    await send_cdp_api_event(item) 
             return orders
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")

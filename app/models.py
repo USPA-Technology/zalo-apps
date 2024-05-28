@@ -45,12 +45,14 @@ class Profile(BaseModel):
 
 
 class Event(BaseModel):
+    eventTime: Optional[str] = None
     targetUpdateEmail: Optional[str] = None
-    # targetUpdatePhone: Optional[str] = None
+    targetUpdatePhone: Optional[str] = None
     tpname: Optional[str] = None
     tpurl: Optional[str] = None
     tprefurl: Optional[str] = None
-    eventdata: Optional[Dict] = None
+    # eventdata: Optional[Dict] = None
+    eventdata: Optional[str] = None
     imageUrls: Optional[str] = None
     metric: Optional[str] = None
 

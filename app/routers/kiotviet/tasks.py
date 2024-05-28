@@ -45,20 +45,19 @@ def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
 
 # Process data for events
 def convert_event_data_mapping(item: DatumOrders) -> Event:
+    evendata_dict = {
+            "id": item.id,
+            "purchaseDate": item.purchaseDate,
+            "customerCode": item.customerCode,
+            "total": item.total,
+            "status": item.status,   
+    }
+    eventdata_json = json.dumps(evendata_dict)
     return Event (
         targetUpdateEmail= "nguyenngocbaolamcva2020@gmail.com",
-        tpname = item.direction,
-        eventdata = {
-            "transaction_id": item.transaction_id,
-            "tenant_id": item.tenant_id,
-            "source_number": item.source_number,
-            "destination_number": item.destination_number,
-            "hotline": item.hotline,
-            "note": item.note,
-            "created_date": item.created_date,
-            "customer": item.customer,
-        },
-        metric = "qr-code-scan",
+        tpname = 'Order',
+        eventdata=eventdata_json,
+        metric = "purchase",
     )
     
 # Send profile data to CDP
@@ -74,6 +73,7 @@ async def send_cdp_api_profile(data: DatumCustomers):
             return client_detail
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
+
 
 def send_cdp_api_profile_request(data: DatumCustomers):
     logger.info("Processing send data")
@@ -91,19 +91,18 @@ def send_cdp_api_profile_request(data: DatumCustomers):
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
    
    
-   
     
 # Send event data to CDP
 async def send_cdp_api_event(data: DatumOrders):
     logger.info("Processing send data")
-    result = convert_event_data_mapping(data).model_dump()
-    print(result)
+    data_converted = convert_event_data_mapping(data).model_dump()
+    print(data_converted)
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url=cdp_api_url_event_save, headers=cdp_headers, json=json.dumps(result))
-            event_detail = response.json()
-            print(event_detail)
-            return event_detail
+            response = await client.post(url=cdp_api_url_event_save, headers=cdp_headers, json=data_converted)
+            result = response.json()
+            print(result)
+            return result
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
 
@@ -163,3 +162,4 @@ def fetch_and_process_data(api_url, headers, params, group_id):
     except requests.RequestException as e:
         logger.error(f"Error connection with KiotViet: {e}")
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
+    

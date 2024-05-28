@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional, Any  
+from typing import List, Optional, Any , Dict
 
 from pydantic import BaseModel
 
@@ -58,15 +58,16 @@ class OrderPayment(BaseModel):
 
 
 class OrderDetails(BaseModel):
-    productId: int
-    productCode: str
-    productName: str
-    isMaster: bool
-    quantity: float
-    price: float
-    discountRatio: float
-    discount: float
-    note: str
+    productId: Optional[int] = None
+    productCode: Optional[str] = None
+    productName: Optional[str] = None
+    isMaster: Optional[bool] = None
+    quantity: Optional[float] = None
+    price: Optional[float] = None
+    discountRatio: Optional[float] = None
+    discount: Optional[float] = None
+    note: Optional[str] = None
+
 
 
 class OrderPartnerDelivery(BaseModel):
@@ -95,37 +96,36 @@ class OrderDelivery(BaseModel):
 
 
 class DatumOrders(BaseModel):
-    id: int
-    code: str
-    purchaseDate: str
-    branchId: int
-    branchName: str
-    soldById: int
-    soldByName: str
-    customerId: int
-    customerCode: str
-    customerName: str
-    total: float
-    totalPayment: float
-    discountRatio: float
-    discount: float
-    status: int
-    statusValue: str
-    description: str
-    usingCod: bool
-    payments: List[OrderPayment]
-    orderDetails: OrderDetails
-    orderDelivery: OrderDelivery
-    retailerId: int
-    modifiedDate: str
-    createdDate: str
+    id: Optional[int] = None
+    code: Optional[str] = None
+    purchaseDate: Optional[str] = None
+    branchId: Optional[int] = None
+    branchName: Optional[str] = None
+    soldById: Optional[int] = None
+    soldByName: Optional[str] = None
+    customerId: Optional[int] = None
+    customerCode: Optional[str] = None
+    customerName: Optional[str] = None
+    total: Optional[float] = None
+    totalPayment: Optional[float] = None
+    discountRatio: Optional[float] = None
+    discount: Optional[float] = None
+    status: Optional[int] = None
+    statusValue: Optional[str] = None
+    description: Optional[str] = None
+    usingCod: Optional[bool] = None
+    payments: Optional[List[OrderPayment]] = None
+    orderDetails: Optional[List[OrderDetails]] = None
+    orderDelivery: Optional[OrderDelivery] = None
+    retailerId: Optional[int] = None
+    modifiedDate: Optional[str] = None
+    createdDate: Optional[str] = None
 
 
 class RespOrderList(BaseModel):
-    total: int
-    pageSize: int
-    data: List[DatumOrders]
-
+    total: Optional[int] = None 
+    pageSize: Optional[int] = None
+    data: Optional[List[DatumOrders]] = None
 
 # ResponseModel return invoices list
 """ 

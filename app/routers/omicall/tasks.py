@@ -50,17 +50,18 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
 # Process data for events
 def convert_event_data_mapping(item: ItemCallHistory) -> Event:
     return Event (
+        eventTime= '2024-05-08T10:51:25.110Z',
         targetUpdateEmail= "nguyenngocbaolamcva2020@gmail.com",
         tpname = item.direction,
         eventdata = {
-            "transaction_id": item.transaction_id,
-            "tenant_id": item.tenant_id,
-            "source_number": item.source_number,
-            "destination_number": item.destination_number,
-            "hotline": item.hotline,
-            "note": item.note,
-            "created_date": item.created_date,
-            "customer": item.customer,
+            'transaction_id': item.transaction_id,
+            'tenant_id': item.tenant_id,
+            'source_number': item.source_number,
+            'destination_number': item.destination_number,
+            'hotline': item.hotline,
+            'note': item.note,
+            'created_date': item.created_date,
+            'customer': item.customer,
         },
         metric = "qr-code-scan",
     )
@@ -72,7 +73,7 @@ async def send_cdp_api_profile(data: ItemCustomer):
     print(result)
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=result.model_dump())
+            response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=result.model_dump_json())
             client_detail = response.json()
             print(client_detail)
             return client_detail
