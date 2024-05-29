@@ -9,6 +9,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi import Depends, FastAPI, HTTPException
 from routers import router
+from dependencies import ProcessedItemLogger
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 
 # from worker import create_task
 from celery.result import AsyncResult
@@ -44,6 +47,31 @@ async def root(request: Request):
 async def zalo_verifier(request: Request):
     data = {"request": request}
     return templates.TemplateResponse("zalo_verifierFkAJ0kdG000gtefTzgq9OptIWcBHf54zCp4s.html", data)
+
+
+
+class ProcessedItemMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app: FastAPI, logger: ProcessedItemLogger):
+        super().__init__(app)
+        self.logger = logger
+
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        return response
+
+logger = ProcessedItemLogger()
+app.add_middleware(ProcessedItemMiddleware, logger=logger)
+
+
+
+
+
+
+
+
+
+
+
 
 
 # @app.post("/tasks", status_code=201)

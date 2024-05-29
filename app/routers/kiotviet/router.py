@@ -3,6 +3,7 @@ from pydantic import ValidationError
 import httpx
 import requests
 import json
+import logging
 from typing import TYPE_CHECKING, Annotated, List, Optional
 
 from .schema import (
@@ -12,12 +13,13 @@ from .schema import (
                      RespInvoiceList
                      )
 from models import Profile, Event
-from dependencies import is_valid_signature
+from dependencies import is_valid_signature, ProcessedItemLogger
 from core.config import (SECRET_KEY_WEBHOOK,
                             ACCESS_TOKEN_KIOTVIET, RETAILER,
                             )
+
 from .tasks import (send_cdp_api_profile,
-                    send_cdp_api_profile_request,
+                    send_cdp_api_profile_retry,
                     send_with_retries,
                     send_cdp_api_event)
 
@@ -25,6 +27,10 @@ signature = SECRET_KEY_WEBHOOK
 retailer = RETAILER
 
 router  = APIRouter(tags=['KiotViet'])
+
+# Cấu hình logging
+logging.basicConfig(filename='customer_retrieval.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = ProcessedItemLogger()
 
 
 # [WEBHOOK] - Customer Update
@@ -103,13 +109,13 @@ async def get_customers(
     name: str = None,
     contact_number: str = None,
     last_modified_from: str = None,
-    page_size: int = 20,
-    current_item: int = None,
-    order_by: str = None,
+    page_size: int = 100,
+    current_item: int = 0,
+    order_by: str = 'id',
     order_direction: str = 'Asc',
     include_remove_ids: bool = False,
-    include_total: bool = False,
-    include_customer_group: bool = False,
+    include_total: bool = True,
+    include_customer_group: bool = True,
     birth_date: str = None,
     group_id: int = None
 ):
@@ -140,35 +146,59 @@ async def get_customers(
         "Retailer": retailer,
         "Authorization": access_token
     }
-    params = {
-        "code": code,
-        "name": name,
-        "contactNumber": contact_number,
-        "lastModifiedFrom": last_modified_from,
-        "pageSize": page_size,
-        "currentItem": current_item,
-        "orderBy": order_by,
-        "orderDirection": order_direction,
-        "includeRemoveIds": include_remove_ids,
-        "includeTotal": include_total,
-        "includeCustomerGroup": include_customer_group,
-        "birthDate": birth_date,
-        "groupId": group_id
-    }
+    total_records = 10  # Assuming this is the total from the database
+    last_processed_item_id = logger.get_last_processed_item()
+    processed_count = 0
+    current_page = 0
+
     while True:
+        params = {
+            "code": code,
+            "name": name,
+            "contactNumber": contact_number,
+            "lastModifiedFrom": last_modified_from,
+            "pageSize": page_size,
+            "currentItem": current_page * page_size,
+            "orderBy": order_by,
+            "orderDirection": order_direction,
+            "includeRemoveIds": include_remove_ids,
+            "includeTotal": include_total,
+            "includeCustomerGroup": include_customer_group,
+            "birthDate": birth_date,
+            "groupId": group_id
+        }
+
         try:
-            response = requests.get(api_url, headers=headers, params=params)
-            response.raise_for_status()  # Raise an HTTPError for bad responses
-            results = response.json()
-            customers = RespCustomerList(**results)
-            items = customers.data
-            if items:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url=api_url, headers=headers, params=params)
+                response.raise_for_status()
+                response_result = response.json()
+                customer_model = RespCustomerList(**response_result)
+                items = customer_model.data
+
+                if not items:
+                    break
+
                 for item in items:
-                    send_with_retries(item)
-            return results
-        except requests.RequestException as e:
+                    item_id = item.id  # Assuming each item has a unique 'id' field
+                    if item_id > last_processed_item_id:
+                        await send_cdp_api_profile_retry(item)
+                        logger.log_processed_item(item_id)
+                        processed_count += 1
+                        logging.info(f'Processed item ID: {item_id}')
+
+                current_page += 1
+                
+                if current_item > total_records:
+                    break
+        except httpx.RequestError as e:
+            logging.error(f"Error connection with KiotViet: {e}")
             raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
-    
+        except httpx.HTTPStatusError as e:
+            logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+
+    return {"total": total_records, "processed": processed_count}
     
 # [API-GET] Get order list
 @router.get('/kiotviet/orders/')

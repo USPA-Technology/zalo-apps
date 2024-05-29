@@ -36,7 +36,7 @@ class DatumCustomers(BaseModel):
 class RespCustomerList(BaseModel):
     total: Optional[int] = None
     pageSize: Optional[int] = None
-    data: List[DatumCustomers]
+    data: List[DatumCustomers] = None
     removeId: Optional[List[int]] = None
 
 
@@ -46,16 +46,15 @@ class RespCustomerList(BaseModel):
 Response from GET of model ReqOrderList
 """
 class OrderPayment(BaseModel):
-    id: int
-    code: str
-    amount: float
-    method: str
-    status: int
-    statusValue: str
-    transDate: str
-    bankAccount: str
-    accountId: int
-
+    id: Optional[int] = None
+    code: Optional[str] = None
+    amount: Optional[float] = None
+    method: Optional[str] = None
+    status: Optional[int] = None
+    statusValue: Optional[str] = None
+    transDate: Optional[str] = None
+    bankAccount: Optional[str] = None
+    accountId: Optional[int] = None
 
 class OrderDetails(BaseModel):
     productId: Optional[int] = None
@@ -71,28 +70,28 @@ class OrderDetails(BaseModel):
 
 
 class OrderPartnerDelivery(BaseModel):
-    code: str
-    name: str
-    address: str
-    contactNumber: str
-    email: str
+    code: Optional[str] = None
+    name: Optional[str] = None
+    address: Optional[str] = None
+    contactNumber: Optional[str] = None
+    email: Optional[str] = None
 
 
 class OrderDelivery(BaseModel):
-    deliveryCode: str
-    type: int
-    price: float
-    receiver: str
-    contactNumber: str
-    address: str
-    locationId: int
-    locationName: str
-    weight: float
-    length: float
-    width: float
-    height: float
-    partnerDeliveryId: int
-    partnerDelivery: OrderPartnerDelivery
+    deliveryCode: Optional[str] = None
+    type: Optional[int] = None
+    price: Optional[float] = None
+    receiver: Optional[str] = None
+    contactNumber: Optional[str] = None
+    address: Optional[str] = None
+    locationId: Optional[int] = None
+    locationName: Optional[str] = None
+    weight: Optional[float] = None
+    length: Optional[float] = None
+    width: Optional[float] = None
+    height: Optional[float] = None
+    partnerDeliveryId: Optional[int] = None
+    partnerDelivery: Optional[OrderPartnerDelivery] = None
 
 
 class DatumOrders(BaseModel):

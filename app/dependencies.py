@@ -7,6 +7,8 @@ import json
 import os
 import logging
 
+LOG_FILE = "processed_items.log"
+
 def is_valid_signature(secret: str, signature: str) -> bool:
     computed_signature = hmac.new(
         secret.encode(),
@@ -29,7 +31,7 @@ def set_gender(gender: str | bool | None):
     else:
         raise ValueError("gender must be a string or boolean")
     
-    # print(f"Gender set to: {gender_str}")
+    print(f"Gender set to: {gender_str}")
     return gender_str
 # # Example usage:
 # set_gender("female")  # Output: Gender set to: female
@@ -59,21 +61,19 @@ def timestamp_to_date(timestamp):
 # print(date_str_from_timestamp)
 
 
+LOG_FILE = "processed_items.log"
 
+class ProcessedItemLogger:
+    def __init__(self, log_file=LOG_FILE):
+        self.log_file = log_file
 
-logger = logging.getLogger(__name__)
+    def get_last_processed_item(self):
+        if not os.path.exists(self.log_file):
+            return 0
+        with open(self.log_file, "r") as file:
+            last_line = file.readlines()[-1].strip()
+            return int(last_line) if last_line else 0
 
-LOG_FILE = "fetch_log.json"
-
-def log_last_page(page: int):
-    log_data = {"last_page": page}
-    with open(LOG_FILE, "w") as log_file:
-        json.dump(log_data, log_file)
-    logger.info(f"Logged last fetched page: {page}")
-
-def get_last_logged_page() -> int:
-    if os.path.exists(LOG_FILE):
-        with open(LOG_FILE, "r") as log_file:
-            log_data = json.load(log_file)
-            return log_data.get("last_page", 1)
-    return 1
+    def log_processed_item(self, item_id):
+        with open(self.log_file, "a") as file:
+            file.write(f"{item_id}\n")
