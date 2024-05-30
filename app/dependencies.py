@@ -27,7 +27,7 @@ def set_gender(gender: str | bool | None):
         gender_str = gender
         
     elif gender is None:
-        gender_str = ""
+        gender_str = None
     else:
         raise ValueError("gender must be a string or boolean")
     

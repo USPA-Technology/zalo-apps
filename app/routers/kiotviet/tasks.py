@@ -40,7 +40,7 @@ dataLables = "KiotViet"
     
 # Process data for profiles
 def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
-    gender_str = set_gender(item.gender)   
+    gender_str = set_gender(item.gender)
     return Profile (
         journeyMapIds = journeyMapIds,
         dataLabels = dataLables,
@@ -123,7 +123,6 @@ async def send_cdp_api_profile_retry(data: DatumCustomers, retries=3, delay=2):
             raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
 
     return None
-
 
 
 # [Plan 2] Send data with requests module

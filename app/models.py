@@ -14,12 +14,12 @@ class Profile(BaseModel):
     primaryAvatar: Optional[str] = None
     primaryEmail: Optional[str] = None
     secondaryEmails: Optional[str] = None
-    primaryPhone: Optional[str] = None
+    primaryPhone: Optional[str | None] = None
     secondaryPhones: Optional[str] = None
     firstName: Optional[str] = None
     middleName: Optional[str] = None
     lastName: Optional[str] = None
-    gender: Optional[str] = None
+    gender: Optional[str | bool] = None
     dateOfBirth: Optional[str] = None  # yyyy-MM-dd
     livingLocation: Optional[str] = None  # the address of customer
     livingCity: Optional[str] = None  # the city where customer is living

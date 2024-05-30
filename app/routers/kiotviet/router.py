@@ -147,7 +147,7 @@ async def get_customers(
         "Authorization": access_token
     }
     all_customers = []
-    total_records = 10
+    total_records = 20
     last_processed_item = logger.get_last_processed_item()
     current_item = 1
 
