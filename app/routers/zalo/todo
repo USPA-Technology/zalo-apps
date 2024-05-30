@@ -1,0 +1,11 @@
+
+
+
+Task 1: Lấy tất cả user_id của người dùng tương tác với Zalo OA
+
+    - 50 user/ 1 request
+    - offset: Thứ tự của người dùng đầu tiên trong danh sách trả về: Hỗ trợ tối đa 9951 (tương ứng 10000 người dùng )
+
+    
+    Dữ liệu vào CDP: user_id, 
+
