@@ -146,10 +146,12 @@ async def get_customers(
         "Retailer": retailer,
         "Authorization": access_token
     }
-    total_records = 10  # Assuming this is the total from the database
-    last_processed_item_id = logger.get_last_processed_item()
-    processed_count = 0
-    current_page = 0
+    all_customers = []
+    total_records = 10
+    last_processed_item = logger.get_last_processed_item()
+    current_item = 1
+
+    logging.info(f"Starting from last processed item: {last_processed_item}")
 
     while True:
         params = {
@@ -158,7 +160,7 @@ async def get_customers(
             "contactNumber": contact_number,
             "lastModifiedFrom": last_modified_from,
             "pageSize": page_size,
-            "currentItem": current_page * page_size,
+            "currentItem": current_item,
             "orderBy": order_by,
             "orderDirection": order_direction,
             "includeRemoveIds": include_remove_ids,
@@ -167,29 +169,29 @@ async def get_customers(
             "birthDate": birth_date,
             "groupId": group_id
         }
-
         try:
             async with httpx.AsyncClient() as client:
+                print(current_item)
                 response = await client.get(url=api_url, headers=headers, params=params)
                 response.raise_for_status()
                 response_result = response.json()
                 customer_model = RespCustomerList(**response_result)
                 items = customer_model.data
-
-                if not items:
+                # Uncomment the following line if total records need to be dynamically fetched
+                # total_records = customer_model.total
+                if items:
+                    for item in items:
+                        print(current_item)
+                        if current_item > last_processed_item:
+                            await send_cdp_api_profile_retry(item)
+                            logger.log_processed_item(current_item)
+                            logging.info(f'Processed item: {current_item}')
+                        current_item += 1
+                        
+                if current_item >= total_records:
                     break
-
-                for item in items:
-                    item_id = item.id  # Assuming each item has a unique 'id' field
-                    if item_id > last_processed_item_id:
-                        await send_cdp_api_profile_retry(item)
-                        logger.log_processed_item(item_id)
-                        processed_count += 1
-                        logging.info(f'Processed item ID: {item_id}')
-
-                current_page += 1
-                
-                if current_item > total_records:
+                if current_item <= last_processed_item:
+                    print("error current items")
                     break
         except httpx.RequestError as e:
             logging.error(f"Error connection with KiotViet: {e}")
@@ -197,8 +199,8 @@ async def get_customers(
         except httpx.HTTPStatusError as e:
             logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
             raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
-
-    return {"total": total_records, "processed": processed_count}
+    
+    return {"total": total_records, "data": all_customers}
     
 # [API-GET] Get order list
 @router.get('/kiotviet/orders/')

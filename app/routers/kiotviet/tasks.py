@@ -40,18 +40,20 @@ dataLables = "KiotViet"
     
 # Process data for profiles
 def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
-    gender_str = set_gender(item.gender)             
+    gender_str = set_gender(item.gender)   
     return Profile (
         journeyMapIds = journeyMapIds,
         dataLabels = dataLables,
-        # primaryEmail = 'lam@gmail.com',
+        primaryEmail = item.email,
         crmRefId= f"KiotViet-{item.code}",
-        secondaryEmails= item.email,
+        # secondaryEmails= item.email,
         primaryPhone = item.contactNumber,
         firstName = item.name,
         gender = gender_str,
         dateOfBirth = item.birthDate,
         livingLocation = item.address,
+        livingCity= item.locationName,
+        livingWard = item.wardName,
         totalTransactionValue= item.totalInvoiced,
         )
 
