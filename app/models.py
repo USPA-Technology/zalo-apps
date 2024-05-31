@@ -23,6 +23,7 @@ class Profile(BaseModel):
     dateOfBirth: Optional[str] = None  # yyyy-MM-dd
     livingLocation: Optional[str] = None  # the address of customer
     livingCity: Optional[str] = None  # the city where customer is living
+    livingDistrict: Optional[str] = None
     livingWard: Optional[str] = None 
     jobTitles: Optional[str] = None  # the Job Title, e.g: CEO; Manager; Head of Sales
     workingHistory: Optional[str] = None

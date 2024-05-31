@@ -147,7 +147,7 @@ async def get_customers(
         "Authorization": access_token
     }
     all_customers = []
-    total_records = 5
+    total_records = 10
     last_processed_item = logger.get_last_processed_item()
     current_item = 1
 
@@ -348,69 +348,3 @@ async def get_invoices(
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-""" 
-import requests
-from datetime import datetime
-
-# Cấu hình API
-api_url = "https://api.example.com/customers"
-page_size = 100
-current_item = 0
-all_customers = []
-
-# Các tham số có thể được sử dụng để lọc và sắp xếp dữ liệu
-params = {
-    "pageSize": page_size,
-    "orderBy": "name",
-    "orderDirection": "Asc",
-    "includeTotal": True,
-    "includeCustomerGroup": True,
-    "includeCustomerSocial": True
-}
-
-while True:
-    # Cập nhật tham số phân trang
-    params["currentItem"] = current_item
-    
-    # Gọi API để lấy dữ liệu khách hàng theo trang
-    response = requests.get(api_url, params=params)
-    data = response.json()
-    
-    # Lấy danh sách khách hàng từ phản hồi API
-    customers = data.get("data", [])
-    
-    if not customers:
-        # Nếu danh sách khách hàng rỗng, thoát khỏi vòng lặp
-        break
-    
-    # Thêm khách hàng vào danh sách tổng
-    all_customers.extend(customers)
-    
-    
-    # Tăng số mục hiện tại lên để lấy dữ liệu trang tiếp theo
-    current_item += len(customers)
-
-print(f"Tổng số khách hàng đã lấy: {len(all_customers)}")
-
-def save_to_database(customers):
-    # Thực hiện lưu dữ liệu khách hàng vào database
-    pass  # Cần triển khai cụ thể tùy theo cấu trúc database của bạn
-
-"""
