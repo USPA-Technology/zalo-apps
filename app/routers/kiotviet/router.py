@@ -147,7 +147,7 @@ async def get_customers(
         "Authorization": access_token
     }
     all_customers = []
-    total_records = 10
+    # total_records = 20
     last_processed_item = logger.get_last_processed_item()
     current_item = 1
 
@@ -178,7 +178,7 @@ async def get_customers(
                 customer_model = RespCustomerList(**response_result)
                 items = customer_model.data
                 # Uncomment the following line if total records need to be dynamically fetched
-                # total_records = customer_model.total
+                total_records = customer_model.total
                 if items:
                     for item in items:
                         print(current_item)
@@ -188,7 +188,7 @@ async def get_customers(
                             logging.info(f'Processed item: {current_item}')
                         current_item += 1
                         
-                if current_item >= total_records:
+                if current_item > total_records:
                     break
                 if current_item <= last_processed_item:
                     print("error current items")
