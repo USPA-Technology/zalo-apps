@@ -6,17 +6,13 @@ from fastapi import HTTPException, APIRouter
 from pydantic import ValidationError
 import logging
 import time
-from .schema import RespCustomerList
 
 from models import Profile, Event
-from .schema import User
+from .schema import UserID
 
-from core.config import (TOKEN_KEY_CDP_KiotViet, TOKEN_VALUE_CDP_KiotViet,
-                         CDP_URL_PROFILE_SAVE, CDP_URL_EVENT_SAVE)
-
-from core.config import (TOKEN_KEY_CDP_EVERON_KIOTVIET, TOKEN_VALUE_CDP_EVERON_KIOTVIET,
+from core.config import (TOKEN_KEY_CDP_EVERON_ZALO, TOKEN_VALUE_CDP_EVERON_ZALO,
                          CDP_URL_PROFILE_EVERON_SAVE, CDP_URL_EVENT_EVERON_SAVE,
-                         CDP_OBSERVER_EVERON_KIOTVIET)
+                         CDP_OBSERVER_EVERON_ZALO)
 
 
 
@@ -29,29 +25,27 @@ cdp_api_url_event_save = CDP_URL_EVENT_EVERON_SAVE
 cdp_headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "*",
-    "tokenkey": TOKEN_KEY_CDP_EVERON_KIOTVIET,
-    "tokenvalue": TOKEN_VALUE_CDP_EVERON_KIOTVIET
+    "tokenkey": TOKEN_KEY_CDP_EVERON_ZALO,
+    "tokenvalue": TOKEN_VALUE_CDP_EVERON_ZALO
 }
 
-journeyMapIds =  CDP_OBSERVER_EVERON_KIOTVIET
+journeyMapIds =  CDP_OBSERVER_EVERON_ZALO
 dataLables = "Zalo OA"
 
     
 # Process data for profiles
-def convert_customer_data_mapping(item: User ) -> Profile:
+def convert_customer_data_mapping(user_id: UserID ) -> Profile:
     return Profile (
         journeyMapIds = journeyMapIds,
         dataLabels = dataLables,
-        primaryEmail = item.email,
-        # secondaryEmails= item.email,
-        primaryPhone = item.contactNumber,
-        firstName = item.name,
+        crmRefId= f"zalo-{user_id.user_id}",
+        firstName="Zalo Visitor"
         )
 
 # 
 
 # Send profile data to CDP with retry logic
-async def send_cdp_api_profile_retry(data: User, retries=3, delay=2):
+async def send_cdp_api_profile_retry(data: UserID, retries=3, delay=2):
     logger.info("Processing send data")
     data_profile_converted = convert_customer_data_mapping(data).model_dump()
     print(data_profile_converted)

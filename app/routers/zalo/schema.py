@@ -5,7 +5,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 # [Truy xuất danh sách người dùng]
-class User(BaseModel):
+class UserID(BaseModel):
     user_id: str
 
 
@@ -13,7 +13,7 @@ class DataListUser(BaseModel):
     total: int
     count: int
     offset: int
-    users: List[User]
+    users: List[UserID]
 
 
 class ModelListUser(BaseModel):

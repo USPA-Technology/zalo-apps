@@ -6,17 +6,24 @@ import json
 import logging
 
 from .schema import ModelListUser
+from .tasks import send_cdp_api_profile_retry
+from dependencies import ProcessedItemLogger
 
 router = APIRouter(tags=['Zalo OA'])
 
+# Config logging
+logging.basicConfig(filename='customer_retrieval_zalo.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = ProcessedItemLogger()
+
+
 
 # [API-GET] Get the customer list
-@router.get('/kiotviet/customers')
-async def get_customers(
+@router.get('/zalo/users')
+async def get_user_list_id(
     offset: int = 0,
     count: int = 50,
     tag_name: str = None,
-    last_interation_period: str = 'L30D',
+    last_interation_period: str = None,
     is_follower: bool = True,
 
 ):
@@ -26,14 +33,19 @@ async def get_customers(
     headers = {
         "access_token": access_token
     }
-
+    total_user_id = []
+    last_processed_item = logger.get_last_processed_item()
+    logging.info(f"Starting from last processed item: {last_processed_item}")
+    
     while True:
         params = {
-            "offset": offset,
-            "count": count,
-            "tag_name": tag_name,
-            "last_interaction_period": last_interation_period,
-            "is_follower": is_follower,
+            "data": json.dumps({
+                "offset": offset,
+                "count": count,
+                # "tag_name": tag_name,
+                # "last_interaction_period": last_interation_period,
+                # "is_follower": is_follower,
+            })
         }
         try:
             async with httpx.AsyncClient() as client:
@@ -41,21 +53,20 @@ async def get_customers(
                 response.raise_for_status()
                 response_result = response.json()
                 model_users = ModelListUser(**response_result)
-                list_user_id = model_users.data.users 
-                # Uncomment the following line if total records need to be dynamically fetched
-                # total_records = customer_model.total
-                if list_user_id:
-                    for user_id in list_user_id:
-                            await send_cdp_api_profile_retry(item)
-                            logger.log_processed_item(current_item)
-                            logging.info(f'Processed item: {current_item}')
-                        current_item += 1
-                        
-                if current_item >= total_records:
+                list_user_id = model_users.data.users
+            
+                if not list_user_id:
+                    logging.info("No more users to process import data of from Zalo OA")
                     break
-                if current_item <= last_processed_item:
-                    print("error current items")
-                    break
+                for user_id in list_user_id:
+                    # if offset > last_processed_item:
+                        await send_cdp_api_profile_retry(user_id)
+                        total_user_id.append(user_id)
+                        # logger.log_processed_item()
+                        logging.info(f'Processed offset: {offset}')
+                
+                offset += count # Update offset by count to get the next set of result
+            
         except httpx.RequestError as e:
             logging.error(f"Error connection with KiotViet: {e}")
             raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
@@ -63,9 +74,10 @@ async def get_customers(
             logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
             raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
     
-    return {"total": total_records, "data": all_customers}
-
-
+    total_user = len(total_user_id)
+    return {f"Total user": {total_user}}
+        
+        
 
 
 
@@ -86,9 +98,9 @@ async def get_users():
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url,
-                                        params={"data": json.dumps({"offset": 0, "count": 20, "tag_name": "", "last_interaction_period": "L30D", "is_follower": True})},
+                                        params={"data": json.dumps({"offset": 0, "count": 20, "tag_name": ""})},
                                         headers={"access_token": access_token})
-            users_follow = response.json()
+            users_follow = response.json()["data"]["users"]
             return users_follow
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with Zalo API")
