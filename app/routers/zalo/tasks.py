@@ -8,8 +8,7 @@ import logging
 import time
 
 from models import Profile, Event
-from .schema import UserID, ModelUserDetail, DataUserDetail
-# from .router import get_user_info
+from .schema import UserID, DataUserDetail
 
 from core.config import (TOKEN_KEY_CDP_EVERON_ZALO, TOKEN_VALUE_CDP_EVERON_ZALO,
                          CDP_URL_PROFILE_EVERON_SAVE, CDP_URL_EVENT_EVERON_SAVE,
@@ -45,9 +44,9 @@ def convert_customer_data_mapping(user_id: UserID ) -> Profile:
     
 
 # Send profile data to CDP with retry logic
-async def send_cdp_api_profile_retry(data: UserID, retries=3, delay=2):
+async def send_cdp_api_profile_retry(data: DataUserDetail, retries=3, delay=2):
     logger.info("Processing send data")
-    data_profile_converted = convert_customer_data_mapping(data).model_dump()
+    data_profile_converted = convert_user_detail_data_mapping(data).model_dump()
     print(data_profile_converted)
 
     for attempt in range(retries):
@@ -73,22 +72,25 @@ async def send_cdp_api_profile_retry(data: UserID, retries=3, delay=2):
 
     return None
 
-async def get_user_detail_zalo(data: UserID):
-    logger.info("Processing send user_id make detail profile user")
-    
-    user_detail = get_user_info(data)
-    print(user_detail)
-    user_detail_model = ModelUserDetail(**user_detail)
-    user_detail = user_detail_model.data
-    send_cdp_api_profile_retry(user_detail)
-    
+
     
 # Process data for mapping user detail from Zalo to CDP
 def convert_user_detail_data_mapping(user: DataUserDetail) -> Profile:
+    
+    if user.shared_info is not None:
+        phone_str = str(user.shared_info.phone)
+        address = user.shared_info.address
+        city = user.shared_info.city
+        district = user.shared_info.district
+    else:
+        phone_str = None
+        address = None
+        city = None
+        district = None
+   
     return Profile (
         journeyMapIds = journeyMapIds,
         dataLabels = dataLables,
-        
         firstName= user.display_name,
         # is_sensitive: false,
         # user_last_interaction_date: "06/07/2023",
@@ -98,10 +100,11 @@ def convert_user_detail_data_mapping(user: DataUserDetail) -> Profile:
         # "tag_names": []
         # },
         primaryAvatar= user.avatar,
-        livingLocation= user.shared_info.address,
-        livingCity= user.shared_info.city,
-        livingDistrict= user.shared_info.district,
-        primaryPhone= user.shared_info.phone,
+        livingLocation= address,
+        livingCity= city,
+        livingDistrict= district,
+        primaryPhone= phone_str,
+        socialMediaProfiles= {"zalo": user.user_id}
         )
 
      

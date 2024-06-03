@@ -5,7 +5,7 @@ import httpx
 import json
 import logging
 
-from .schema import ModelListUser
+from .schema import ModelListUser, ModelUserDetail, UserID
 from .tasks import send_cdp_api_profile_retry
 from dependencies import ProcessedItemLogger
 
@@ -58,10 +58,11 @@ async def get_user_list_id(
                 if not list_user_id:
                     logging.info("No more users to process import data of from Zalo OA")
                     break
-                for user_id in list_user_id:
+                for user in list_user_id:
                     # if offset > last_processed_item:
-                        await send_cdp_api_profile_retry(user_id)
-                        total_user_id.append(user_id)
+                        user_id_str = str(user.user_id)
+                        await get_user_info(user_id_str)
+                        total_user_id.append(user_id_str)
                         # logger.log_processed_item()
                         logging.info(f'Processed offset: {offset}')
                 
@@ -78,15 +79,6 @@ async def get_user_list_id(
     return {f"Total user": {total_user}}
         
         
-
-
-
-
-
-
-
-
-
 
 
 
@@ -116,7 +108,9 @@ async def get_user_info(user_id: str):
                                         params={"data": json.dumps({"user_id": user_id})}, 
                                         headers={"access_token": access_token})
             user_detail = response.json()
-            return user_detail
+            model_user_detail = ModelUserDetail(**user_detail)
+            data_user_detail = model_user_detail.data
+            await send_cdp_api_profile_retry(data_user_detail)
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with Zalo API: {e}")
 
@@ -148,3 +142,5 @@ async def send_message_media(data: dict): # messege_template in models
             return users_follow
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error communicating with Zalo API: {e}")
+    
+    
