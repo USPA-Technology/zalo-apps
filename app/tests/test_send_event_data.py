@@ -7,13 +7,13 @@ now = datetime.now() # current date and time
 
 import httpx
 from fastapi import HTTPException
-api_url = 'https://dcdp.bigdatavietnam.org/api/event/save'
+api_url = ''
 
 headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "*",
-    "tokenkey": '4vBUFB4rbehETPIlAXJ4Bd',
-    "tokenvalue": '6744954_VgRiAmSSOnKRDUKkCt5oD'
+    "tokenkey": '',
+    "tokenvalue": ''
 }
 # print(headers)
 

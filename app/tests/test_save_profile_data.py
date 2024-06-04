@@ -7,13 +7,13 @@ now = datetime.now() # current date and time
 
 import httpx
 from fastapi import HTTPException
-api_url = 'https://cdpeveron.dpoint.vn/api/profile/save'
+api_url = ''
 
 headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "",
-    "tokenkey": '1aV9CvRmD6WCvaWAjUOfGk',
-    "tokenvalue": '434889_1Lsix9Je1X6GKbaqzRMda7'
+    "tokenkey": '',
+    "tokenvalue": ''
 }
 sampleExtAttributes = {}
 sampleSocialMediaProfiles = {"zalo": "123456789-213828"}
