@@ -40,6 +40,7 @@ class Profile(BaseModel):
     extAttributes: Optional[Dict[str, str]] = None
     incomeHistory: Optional[Dict[str, int]] = None
     socialMediaProfiles: Optional[Dict[str, str]] = None
+    # applicationIDs: Optional[Dict[str, str]] = None
 
 # class EventData(BaseModel):
 #     itemtId: Optional[str] = None

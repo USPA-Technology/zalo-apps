@@ -30,14 +30,14 @@ cdp_headers = {
 }
 
 journeyMapIds =  CDP_OBSERVER_EVERON_ZALO
-dataLables = "Zalo OA"
+dataLables_follower = "Zalo OA follower"
 
     
 # Process data for profiles
 def convert_customer_data_mapping(user_id: UserID ) -> Profile:
     return Profile (
         journeyMapIds = journeyMapIds,
-        dataLabels = dataLables,
+        dataLabels = dataLables_follower,
         crmRefId= f"zalo-{user_id.user_id}",
         firstName="Zalo Visitor"
         )
@@ -90,7 +90,7 @@ def convert_user_detail_data_mapping(user: DataUserDetail) -> Profile:
    
     return Profile (
         journeyMapIds = journeyMapIds,
-        dataLabels = dataLables,
+        dataLabels = dataLables_follower,
         firstName= user.display_name,
         # is_sensitive: false,
         # user_last_interaction_date: "06/07/2023",
@@ -104,7 +104,8 @@ def convert_user_detail_data_mapping(user: DataUserDetail) -> Profile:
         livingCity= city,
         livingDistrict= district,
         primaryPhone= phone_str,
-        socialMediaProfiles= {"zalo": user.user_id}
+        crmRefId= f"zalo-{user.user_id}",
+        # socialMediaProfiles= {"zalo": user.user_id}
         )
 
      

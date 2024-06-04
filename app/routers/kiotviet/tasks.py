@@ -11,9 +11,6 @@ from .schema import RespCustomerList
 from models import Profile, Event
 from .schema import DatumCustomers, DatumOrders, DatumInvoices
 
-from core.config import (TOKEN_KEY_CDP_KiotViet, TOKEN_VALUE_CDP_KiotViet,
-                         CDP_URL_PROFILE_SAVE, CDP_URL_EVENT_SAVE)
-
 from core.config import (TOKEN_KEY_CDP_EVERON_KIOTVIET, TOKEN_VALUE_CDP_EVERON_KIOTVIET,
                          CDP_URL_PROFILE_EVERON_SAVE, CDP_URL_EVENT_EVERON_SAVE,
                          CDP_OBSERVER_EVERON_KIOTVIET)

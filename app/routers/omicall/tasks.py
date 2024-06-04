@@ -8,21 +8,25 @@ import logging
 from models import Profile, Event
 from .schema import ItemCustomer, ItemCallHistory
 
-from core.config import (TOKEN_KEY_CDP_OMICALL, TOKEN_VALUE_CDP_OMICALL,
-                         CDP_URL_PROFILE_SAVE, CDP_URL_EVENT_SAVE)
+from core.config import (TOKEN_KEY_CDP_EVERON_OMICALL, TOKEN_VALUE_CDP_EVERON_OMICALL,
+                         CDP_URL_PROFILE_EVERON_SAVE, CDP_URL_EVENT_EVERON_SAVE,
+                         CDP_OBSERVER_EVERON_OMICALL)
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-cdp_api_url_profile_save = CDP_URL_PROFILE_SAVE
-cdp_api_url_event_save = CDP_URL_EVENT_SAVE
+cdp_api_url_profile_save = CDP_URL_PROFILE_EVERON_SAVE
+cdp_api_url_event_save = CDP_URL_EVENT_EVERON_SAVE
 
 cdp_headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "*",
-    "tokenkey": TOKEN_KEY_CDP_OMICALL,
-    "tokenvalue": TOKEN_VALUE_CDP_OMICALL
+    "tokenkey": TOKEN_KEY_CDP_EVERON_OMICALL,
+    "tokenvalue": TOKEN_VALUE_CDP_EVERON_OMICALL
 }
+
+journeyMapIds =  CDP_OBSERVER_EVERON_OMICALL
+dataLables = "OmiCall"
 
 # Process data for profiles
 def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
@@ -36,8 +40,9 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
             data_dict[field_code] = display_value
                                 
     return Profile (
-        journeyMapIds = "4vBUFB4rbehETPIlAXJ4Bd",
-        dataLabels = "OmiCall",
+        journeyMapIds = journeyMapIds,
+        dataLabels = dataLables,
+        crmRefId= data_dict.get("ref_code"),
         primaryEmail = data_dict.get("mail"),
         primaryPhone = data_dict.get("phone_number"),
         firstName = data_dict.get("full_name"),
@@ -45,7 +50,7 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
         dateOfBirth = data_dict.get("birth_date"),
         livingLocation = data_dict.get("address"),
         jobTitles = data_dict.get("job_title"),
-            )
+        )
 
 # Process data for events
 def convert_event_data_mapping(item: ItemCallHistory) -> Event:
@@ -69,11 +74,11 @@ def convert_event_data_mapping(item: ItemCallHistory) -> Event:
 # Send profile data to CDP
 async def send_cdp_api_profile(data: ItemCustomer):
     logger.info("Processing send data")
-    result = convert_customer_data_mapping(data)
-    print(result)
+    data_profile_converted = convert_customer_data_mapping(data).model_dump()
+    print(data_profile_converted)
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=result.model_dump_json())
+            response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=data_profile_converted)
             client_detail = response.json()
             print(client_detail)
             return client_detail
