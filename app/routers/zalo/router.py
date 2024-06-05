@@ -81,9 +81,6 @@ async def get_user_list_id(
     return {f"Total user": {total_user}}
         
         
-
-
-
 # Retrieve a list of users in OA
 @router.get('/getUsers/')
 async def get_users():
@@ -98,6 +95,7 @@ async def get_users():
             return users_follow
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with Zalo API")
+
 
 # Retrieve user details
 @router.get('/getUserDetails/{user_id}')

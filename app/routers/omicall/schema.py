@@ -102,7 +102,7 @@ class AttributeStructureItem(BaseModel):
 
 
 class ContactCategoriesViewItem(BaseModel):
-    id: str
+    id: Optional[str] = None
     name: str
     type: str
     types: Any

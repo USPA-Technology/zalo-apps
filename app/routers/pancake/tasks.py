@@ -46,7 +46,6 @@ def convert_customer_data_mapping(item: DatumCustomer ) -> Profile:
         journeyMapIds = journeyMapIds,
         dataLabels = dataLables,
         crmRefId= f"PanCake-{item.id}",
-        # secondaryEmails= item.email,
         primaryPhone = item.phone_numbers[0],
         firstName = item.name,
         gender = gender_str,
