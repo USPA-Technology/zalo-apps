@@ -290,26 +290,25 @@ class WebhookOrder(BaseModel):
 
 # [WEBHOOK] Response Model Customer Update KiotViet
 class WebhookDatumCustomer(BaseModel):
-    Id: int
-    Code: str
-    Name: str
-    Gender: bool
-    BirthDate: str
-    ContactNumber: str
-    Address: str
-    LocationName: str
-    Email: str
-    ModifiedDate: str
-    Type: int
-    Organization: str
-    TaxCode: str
-    Comments: str
+    Id: Optional[int] = None
+    Code: Optional[str] = None
+    Name: Optional[str] = None
+    Gender: Optional[bool] = None
+    BirthDate: Optional[str] = None
+    ContactNumber: Optional[str] = None
+    Address: Optional[str] = None
+    LocationName: Optional[str] = None
+    Email: Optional[str] = None
+    ModifiedDate: Optional[str] = None
+    Type: Optional[int] = None
+    Organization: Optional[str] = None
+    TaxCode: Optional[str] = None
+    Comments: Optional[str] = None
 
 
 class WebhookNotificationCustomer(BaseModel):
     Action: str
     Data: List[WebhookDatumCustomer]
-
 
 class WebhookCustomer(BaseModel):
     Id: str

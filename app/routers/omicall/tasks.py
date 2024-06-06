@@ -51,7 +51,7 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
         dateOfBirth = data_dict.get("birth_date"),
         livingLocation = data_dict.get("address"),
         jobTitles = data_dict.get("job_title"),
-        applicationIDs= {"Refcode": data_dict.get("ref_code")}
+        # applicationIDs= {"Refcode": data_dict.get("ref_code")}
         )
 
 # Process data for events

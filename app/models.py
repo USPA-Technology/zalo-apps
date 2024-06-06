@@ -10,7 +10,7 @@ class Profile(BaseModel):
     journeyMapIds: str
     dataLabels: str
     crmRefId: Optional[str] = None
-    governmentIssuedIDs: str = None
+    # governmentIssuedIDs: str = None
     primaryAvatar: Optional[str] = None
     primaryEmail: Optional[str] = None
     secondaryEmails: Optional[str] = None
@@ -42,12 +42,7 @@ class Profile(BaseModel):
     # socialMediaProfiles: Optional[Dict[str, str]] = None
     # businessContacts: Optional[Dict[str, str]] = None
     applicationIDs: Optional[Dict[str, Optional[str]]] = None
-
-# class EventData(BaseModel):
-#     itemtId: Optional[str] = None
-#     idType: Optional[str] = None
-#     quantity: Optional[str] = None
-
+    
 
 class Event(BaseModel):
     eventTime: Optional[str] = None
