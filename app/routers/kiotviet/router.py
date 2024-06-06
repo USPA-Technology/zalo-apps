@@ -343,8 +343,13 @@ async def get_invoices(
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, headers=headers, params=params)
-            invoices = response.json()
+            result = response.json()
+            invoices = RespInvoiceList(**result)
+            items = invoices.data
+            if items:
+                for item in items:
+                    await send_cdp_api_event(item) 
             return invoices
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
-    
+

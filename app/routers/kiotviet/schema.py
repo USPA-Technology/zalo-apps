@@ -131,112 +131,105 @@ class RespOrderList(BaseModel):
 Response from GET of model ReqInvoiceList
 """
 class InvoicePayment(BaseModel):
-    id: int
-    code: str
-    amount: float
-    method: str
-    status: int
-    statusValue: str
-    transDate: str
-    bankAccount: str
-    accountId: int
-
+    id: Optional[int] = None
+    code: Optional[str] = None
+    amount: Optional[float] = None
+    method: Optional[str] = None
+    status: Optional[int] = None
+    statusValue: Optional[str] = None
+    transDate: Optional[str] = None
+    bankAccount: Optional[str] = None
+    accountId: Optional[int] = None
 
 class InvoiceOrderSurcharge(BaseModel):
-    id: int
-    invoiceId: int
-    surchargeId: int
-    surchargeName: str
-    surValue: float
-    price: float
-    createdDate: str
-
+    id: Optional[int] = None
+    invoiceId: Optional[int] = None
+    surchargeId: Optional[int] = None
+    surchargeName: Optional[str] = None
+    surValue: Optional[float] = None
+    price: Optional[float] = None
+    createdDate: Optional[str] = None
 
 class ProductBatchExpire(BaseModel):
-    id: int
-    productId: int
-    batchName: str
-    fullNameVirgule: str
-    createdDate: str
-    expireDate: str
-
+    id: Optional[int] = None
+    productId: Optional[int] = None
+    batchName: Optional[str] = None
+    fullNameVirgule: Optional[str] = None
+    createdDate: Optional[str] = None
+    expireDate: Optional[str] = None
 
 class InvoiceDetails(BaseModel):
-    productId: int
-    productCode: str
-    productName: str
-    quantity: float
-    price: float
-    discountRatio: float
-    discount: float
-    note: str
-    serialNumbers: str
-    productBatchExpire: ProductBatchExpire
-
+    productId: Optional[int] = None
+    productCode: Optional[str] = None
+    productName: Optional[str] = None
+    quantity: Optional[float] = None
+    price: Optional[float] = None
+    discountRatio: Optional[float] = None
+    discount: Optional[float] = None
+    note: Optional[str] = None
+    serialNumbers: Optional[str] = None
+    productBatchExpire: Optional[ProductBatchExpire] = None
 
 class SaleChannel(BaseModel):
-    IsNotDelete: bool
-    RetailerId: int
-    Position: int
-    IsActivate: bool
-    CreatedBy: int
-    CreatedDate: str
-    Id: int
-    Name: str
-
+    IsNotDelete: Optional[bool] = None
+    RetailerId: Optional[int] = None
+    Position: Optional[int] = None
+    IsActivate: Optional[bool] = None
+    CreatedBy: Optional[int] = None
+    CreatedDate: Optional[str] = None
+    Id: Optional[int] = None
+    Name: Optional[str] = None
 
 class InvoicePartnerDelivery(BaseModel):
-    code: str
-    name: str
-    address: str
-    contactNumber: str
-    email: str
-
+    code: Optional[str] = None
+    name: Optional[str] = None
+    address: Optional[str] = None
+    contactNumber: Optional[str] = None
+    email: Optional[str] = None
 
 class InvoiceDelivery(BaseModel):
-    deliveryCode: str
-    type: int
-    status: int
-    statusValue: str
-    price: float
-    receiver: str
-    contactNumber: str
-    address: str
-    locationId: int
-    locationName: str
-    usingPriceCod: bool
-    priceCodPayment: float
-    weight: float
-    length: float
-    width: float
-    height: float
-    partnerDeliveryId: int
-    partnerDelivery: InvoicePartnerDelivery
-
+    deliveryCode: Optional[str] = None
+    type: Optional[int] = None
+    status: Optional[int] = None
+    statusValue: Optional[str] = None
+    price: Optional[float] = None
+    receiver: Optional[str] = None
+    contactNumber: Optional[str] = None
+    address: Optional[str] = None
+    locationId: Optional[int] = None
+    locationName: Optional[str] = None
+    usingPriceCod: Optional[bool] = None
+    priceCodPayment: Optional[float] = None
+    weight: Optional[float] = None
+    length: Optional[float] = None
+    width: Optional[float] = None
+    height: Optional[float] = None
+    partnerDeliveryId: Optional[int] = None
+    partnerDelivery: Optional[InvoicePartnerDelivery] = None
 
 class DatumInvoices(BaseModel):
-    id: int
-    code: str
-    purchaseDate: str
-    branchId: int
-    branchName: str
-    soldById: int
-    soldByName: str
-    customerId: int
-    customerCode: str
-    customerName: str
-    total: float
-    totalPayment: float
-    status: int
-    statusValue: str
-    usingCod: bool
-    createdDate: str
-    modifiedDate: str
-    payments: List[InvoicePayment]
-    invoiceOrderSurcharges: List[InvoiceOrderSurcharge]
-    invoiceDetails: InvoiceDetails
-    SaleChannel: SaleChannel
-    invoiceDelivery: InvoiceDelivery
+    id: Optional[int] = None
+    code: Optional[str] = None
+    purchaseDate: Optional[str] = None
+    branchId: Optional[int] = None
+    branchName: Optional[str] = None
+    soldById: Optional[int] = None
+    soldByName: Optional[str] = None
+    customerId: Optional[int] = None
+    customerCode: Optional[str] = None
+    customerName: Optional[str] = None
+    total: Optional[float] = None
+    totalPayment: Optional[float] = None
+    status: Optional[int] = None
+    statusValue: Optional[str] = None
+    usingCod: Optional[bool] = None
+    createdDate: Optional[str] = None
+    modifiedDate: Optional[str] = None
+    payments: Optional[List[InvoicePayment]] = None
+    invoiceOrderSurcharges: Optional[List[InvoiceOrderSurcharge]] = None
+    invoiceDetails: Optional[List[InvoiceDetails]] = None
+    SaleChannel: Optional[SaleChannel] = None
+    invoiceDelivery: Optional[InvoiceDelivery] = None
 
 
 class RespInvoiceList(BaseModel):

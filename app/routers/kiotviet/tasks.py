@@ -55,7 +55,7 @@ def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
         )
 
 # Process data for events
-def convert_event_data_mapping(item: DatumOrders) -> Event:
+def convert_event_data_mapping(item: DatumInvoices) -> Event:
     evendata_dict = {
             "id": item.id,
             "purchaseDate": item.purchaseDate,
@@ -63,12 +63,19 @@ def convert_event_data_mapping(item: DatumOrders) -> Event:
             "total": item.total,
             "status": item.status,   
     }
+    shoppingCartItems = []
+    shoppingCartItems.append({
+        "name": item.invoiceDetails[0].productName,
+        "salePrice": item.invoiceDetails[0].price,
+    })
+    shoppingCartItems_json = json.dumps(shoppingCartItems)
     eventdata_json = json.dumps(evendata_dict)
     return Event (
         targetUpdateEmail= "nguyenngocbaolamcva2020@gmail.com",
-        tpname = 'Order',
+        tpname = 'Invoices',
         eventdata=eventdata_json,
         metric = "purchase",
+        scitems = shoppingCartItems_json,
     )
 
 
