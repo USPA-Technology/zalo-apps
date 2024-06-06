@@ -31,29 +31,34 @@ cdp_headers = {
 }
 
 journeyMapIds =  CDP_OBSERVER_EVERON_PANCAKE_POS
-dataLables = "PanCake-Pos"
+dataLabels = "PanCake-Pos"
 
     
-# Process data for profiles
-def convert_customer_data_mapping(item: DatumCustomer ) -> Profile:
+def convert_customer_data_mapping(item: DatumCustomer) -> Profile:
     gender_str = set_gender(item.gender)
-    # Check if shop_customer_addresses is not None before accessing its elements
-    if len(item.shop_customer_addresses) == 0 or len(item.phone_numbers) ==  0:
+    
+    # Kiểm tra và set giá trị cho living_location
+    if len(item.shop_customer_addresses) == 0:
         living_location = None
-        phone = None
     else:
         living_location = item.shop_customer_addresses[0].full_address
+
+    # Kiểm tra và set giá trị cho phone
+    if len(item.phone_numbers) == 0:
+        phone = None
+    else:
         phone = item.phone_numbers[0]
-    return Profile (
+
+    return Profile(
         journeyMapIds = journeyMapIds,
-        dataLabels = dataLables,
-        crmRefId= f"PanCake-{item.id}",
+        dataLabels = dataLabels,
+        crmRefId = f"PanCake-{item.id}",
         primaryPhone = phone,
         firstName = item.name,
         gender = gender_str,
         dateOfBirth = item.date_of_birth,
         livingLocation = living_location,
-        totalTransactionValue= item.purchased_amount,
+        totalTransactionValue = item.purchased_amount,
     )
 
 

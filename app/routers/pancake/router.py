@@ -31,27 +31,34 @@ async def get_customers(
 
     api_url = f"https://pos.pages.fm/api/v1/shops/{shop_id}/customers/"
     api_key = API_KEY_EVERON_PANCAKE_POS
-
-    params = {
-            'api_key': api_key,
-            'page_size': page_size,
-            'page_number': page_number,
-        }
-    try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url=api_url, params=params)
-                response.raise_for_status()
-                response_result = response.json()
-                print(response_result)
-                customer_model = ModelCustomer(**response_result)
-                customers = customer_model.data
-                if customers:
+    total_user = 0
+    while True:
+        params = {
+                'api_key': api_key,
+                'page_size': page_size,
+                'page_number': page_number,
+            }
+        try:
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(url=api_url, params=params)
+                    response.raise_for_status()
+                    response_result = response.json()
+                    print(response_result)
+                    customer_model = ModelCustomer(**response_result)
+                    customers = customer_model.data
+                    if not customers:
+                        logging.info("No more users to process import data of from OmiCall")
+                        break
                     for customer in customers:
                         await send_cdp_api_profile_retry(customer)
-                return customers
-    except httpx.RequestError as e:
-        logging.error(f"Error connection with Pancake: {e}")
-        raise HTTPException(status_code=500, detail=f"Error connection with Pancake: {e}")
-    except httpx.HTTPStatusError as e:
-        logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
-        raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+                    # return customers
+                    page_number += 1
+        except httpx.RequestError as e:
+            logging.error(f"Error connection with Pancake: {e}")
+            raise HTTPException(status_code=500, detail=f"Error connection with Pancake: {e}")
+        except httpx.HTTPStatusError as e:
+            logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+        
+    count_total_user = len(total_user)
+    return {f"Total user": {count_total_user}}

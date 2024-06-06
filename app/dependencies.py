@@ -52,13 +52,13 @@ def timestamp_to_date(timestamp):
     return date_str
 
 # Example usage
-from_date = date_to_timestamp("01/06/2024")
-to_date = date_to_timestamp("05/06/2024")
-print(from_date)
-print(to_date)
+# from_date = date_to_timestamp("01/06/2024")
+# to_date = date_to_timestamp("05/06/2024")
+# print(from_date)
+# print(to_date)
 
-date_str_from_timestamp = timestamp_to_date(1638774810356)  # Example timestamp in milliseconds
-print(date_str_from_timestamp)
+# date_str_from_timestamp = timestamp_to_date(1638774810356)  # Example timestamp in milliseconds
+# print(date_str_from_timestamp)
 
 
 LOG_FILE = "processed_items.log"

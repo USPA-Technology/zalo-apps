@@ -27,10 +27,10 @@ cdp_headers = {
 }
 
 journeyMapIds =  CDP_OBSERVER_EVERON_OMICALL
-dataLables = "OmiCall"
 
 # Process data for profiles
 def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
+    dataLabels = f"Omicall ; {item.contact_categories_view[0].name}"
     data_dict = {}
     attribute_structures = item.attribute_structure
     for attribute in attribute_structures:
@@ -42,8 +42,8 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
                                 
     return Profile (
         journeyMapIds = journeyMapIds,
-        dataLabels = dataLables,
-        crmRefId= data_dict.get("ref_code"),
+        dataLabels = dataLabels,
+        crmRefId= f"OmiCall-{item.id}",
         primaryEmail = data_dict.get("mail"),
         primaryPhone = data_dict.get("phone_number"),
         firstName = data_dict.get("full_name"),
@@ -51,6 +51,7 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
         dateOfBirth = data_dict.get("birth_date"),
         livingLocation = data_dict.get("address"),
         jobTitles = data_dict.get("job_title"),
+        applicationIDs= {"Refcode": data_dict.get("ref_code")}
         )
 
 # Process data for events
