@@ -4,6 +4,7 @@ import httpx
 from fastapi import HTTPException, APIRouter
 from pydantic import ValidationError
 import logging
+import time
 
 from models import Profile, Event
 from .schema import ItemCustomer, ItemCallHistory
@@ -55,37 +56,55 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
 # Process data for events
 def convert_event_data_mapping(item: ItemCallHistory) -> Event:
     return Event (
-        eventTime= '2024-05-08T10:51:25.110Z',
+        eventTime= item.created_date,
+        # TargetUpdate Customer_code with KiotViet
         targetUpdateEmail= "nguyenngocbaolamcva2020@gmail.com",
+        # Tpname
         tpname = item.direction,
         eventdata = {
             'transaction_id': item.transaction_id,
             'tenant_id': item.tenant_id,
             'source_number': item.source_number,
             'destination_number': item.destination_number,
+            'disposition': item.disposition,
             'hotline': item.hotline,
+            'tag': item.tag,
             'note': item.note,
-            'created_date': item.created_date,
+            'last_updated_data': item.created_date,
             'customer': item.customer,
         },
         metric = "qr-code-scan",
     )
     
-# Send profile data to CDP
-async def send_cdp_api_profile(data: ItemCustomer):
+# Send profile data to CDP with retry logic
+async def send_cdp_api_profile_retry(data: ItemCustomer, retries=3, delay=2):
     logger.info("Processing send data")
     data_profile_converted = convert_customer_data_mapping(data).model_dump()
     print(data_profile_converted)
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url= cdp_api_url_profile_save, headers=cdp_headers, json=data_profile_converted)
-            client_detail = response.json()
-            print(client_detail)
-            return client_detail
-    except httpx.RequestError as e:
-        raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
 
-    
+    for attempt in range(retries):
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url=cdp_api_url_profile_save,
+                                             headers=cdp_headers,
+                                             json=data_profile_converted)
+                response.raise_for_status()  # Raise an HTTPError if the response was unsuccessful
+                response_result = response.json()
+                print(response_result)
+                return response_result
+        except httpx.RequestError as e:
+            logger.error(f"Attempt {attempt + 1} failed: {e}")
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                logger.error("Max retries exceeded. Could not connect to CDP.")
+                raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+
+    return None
+
 # Send event data to CDP
 async def send_cdp_api_event(data: ItemCallHistory):
     logger.info("Processing send data")

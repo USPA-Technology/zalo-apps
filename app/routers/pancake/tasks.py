@@ -38,15 +38,17 @@ dataLables = "PanCake-Pos"
 def convert_customer_data_mapping(item: DatumCustomer ) -> Profile:
     gender_str = set_gender(item.gender)
     # Check if shop_customer_addresses is not None before accessing its elements
-    if len(item.shop_customer_addresses) == 0:
+    if len(item.shop_customer_addresses) == 0 or len(item.phone_numbers) ==  0:
         living_location = None
+        phone = None
     else:
         living_location = item.shop_customer_addresses[0].full_address
+        phone = item.phone_numbers[0]
     return Profile (
         journeyMapIds = journeyMapIds,
         dataLabels = dataLables,
         crmRefId= f"PanCake-{item.id}",
-        primaryPhone = item.phone_numbers[0],
+        primaryPhone = phone,
         firstName = item.name,
         gender = gender_str,
         dateOfBirth = item.date_of_birth,

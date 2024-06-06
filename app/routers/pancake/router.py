@@ -25,7 +25,7 @@ router  = APIRouter(tags=['PanCake'])
 # [API-GET] Get the customer list
 @router.get('/pancake/customers')
 async def get_customers(
-    page_size: int = 30,
+    page_size: int = 50,
     page_number: int = 1,
 ):
 
@@ -35,6 +35,7 @@ async def get_customers(
     params = {
             'api_key': api_key,
             'page_size': page_size,
+            'page_number': page_number,
         }
     try:
             async with httpx.AsyncClient() as client:
@@ -54,5 +55,3 @@ async def get_customers(
     except httpx.HTTPStatusError as e:
         logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
         raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
-    
-    

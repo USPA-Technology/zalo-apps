@@ -139,7 +139,6 @@ def send_cdp_api_profile_request(data: DatumCustomers):
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
    
    
-    
 # Send event data to CDP
 async def send_cdp_api_event(data: DatumOrders):
     logger.info("Processing send data")
