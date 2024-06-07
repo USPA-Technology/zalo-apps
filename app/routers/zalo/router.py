@@ -135,7 +135,6 @@ async def tag_follower(user_id: str, tag_name: str):
 async def send_message_media(data: dict): # messege_template in models 
     api_url = "https://openapi.zalo.me/v3.0/oa/message/promotion"
     access_token = ACCESS_TOKEN_ZALO
-    
     try:
         async with httpx.AsyncClient() as client:
             response = await client.post(api_url, json=data, headers={"access_token": access_token})

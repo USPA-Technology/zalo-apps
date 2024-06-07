@@ -9,7 +9,7 @@ import time
 from .schema import RespCustomerList
 
 from models import Profile, Event
-from .schema import DatumCustomers, DatumOrders, DatumInvoices
+from .schema import DatumCustomers, DatumOrders, DatumInvoices, InvoiceDetails
 
 from core.config import (TOKEN_KEY_CDP_EVERON_KIOTVIET, TOKEN_VALUE_CDP_EVERON_KIOTVIET,
                          CDP_URL_PROFILE_EVERON_SAVE, CDP_URL_EVENT_EVERON_SAVE,
@@ -34,6 +34,10 @@ cdp_headers = {
 journeyMapIds =  CDP_OBSERVER_EVERON_KIOTVIET
 dataLables = "KiotViet"
 
+def convert_kiotviettime_to_CDP_time(datetime_str):
+  return datetime_str.split('.')[0] + 'Z'
+
+
     
 # Process data for profiles
 def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
@@ -56,26 +60,42 @@ def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
 
 # Process data for events
 def convert_event_data_mapping(item: DatumInvoices) -> Event:
-    evendata_dict = {
-            "id": item.id,
-            "purchaseDate": item.purchaseDate,
-            "customerCode": item.customerCode,
-            "total": item.total,
-            "status": item.status,   
-    }
-    shoppingCartItems = []
-    shoppingCartItems.append({
-        "name": item.invoiceDetails[0].productName,
-        "salePrice": item.invoiceDetails[0].price,
-    })
-    shoppingCartItems_json = json.dumps(shoppingCartItems)
-    eventdata_json = json.dumps(evendata_dict)
+    
+    # def kiotviet_to_cdp(invoiceDetail: InvoiceDetails):
+    #     cdp_events = []
+    #     for item_ in item.invoiceDetails:
+    #         cdp_event = {
+    #             "name": item_.productName,
+    #             "itemtId": item_.productId,  # Assuming productId is the item ID
+    #             "idType": "item_ID",
+    #             # Assuming price is the original price
+    #             "originalPrice": item_.price,
+    #             "salePrice": item_.price - item_.discount,
+    #             "quantity": item_.quantity,
+    #             "currency": "VND",
+    #             "supplierId": "",  # Not available in KiotViet data
+    #             "couponCode": "",  # Not available in KiotViet data
+    #             # Not available in KiotViet data
+    #             "fullUrl": 'uri://productCode:' + item_.productCode,
+    #             "imageUrl": ""  # Not available in KiotViet data
+    #     }
+    #         cdp_events.append(cdp_event)
+    #     return cdp_events
+
+    
+    metric_event = "purchase"
+    # shoppingCartItems = kiotviet_to_cdp(item.invoiceDetails)
+    
     return Event (
-        targetUpdateEmail= "nguyenngocbaolamcva2020@gmail.com",
-        tpname = 'Invoices',
-        eventdata=eventdata_json,
-        metric = "purchase",
-        scitems = shoppingCartItems_json,
+        eventTime= convert_kiotviettime_to_CDP_time(item.purchaseDate),
+        targetUpdateCrmId= f"KiotViet-{item.customerCode}",
+        tpname = f"{item.soldByName}- {item.branchName}",
+        # rawJsonData= item,
+        metric = metric_event,
+        tsid= item.code,
+        tscur= "VND",
+        tsval= item.totalPayment,
+
     )
 
 

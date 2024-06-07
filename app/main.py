@@ -24,7 +24,6 @@ FOLDER_TEMPLATES = FOLDER_RESOURCES + "templates"
 # init FAST API app
 app = FastAPI()
 app.include_router(router)
-
 origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
@@ -61,4 +60,5 @@ class ProcessedItemMiddleware(BaseHTTPMiddleware):
 
 logger = ProcessedItemLogger()
 app.add_middleware(ProcessedItemMiddleware, logger=logger)
+
 

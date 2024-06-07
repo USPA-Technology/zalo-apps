@@ -135,7 +135,7 @@ class ItemCustomer(BaseModel):
     ref_code: str
     tags_view: Optional[List] = None
     business_type_view: Optional[List] = None
-    contact_categories_view: List[ContactCategoriesViewItem]
+    contact_categories_view: Optional[List[ContactCategoriesViewItem]] = None
 
 
 class PayloadCustomer(BaseModel):

@@ -48,6 +48,7 @@ class Event(BaseModel):
     eventTime: Optional[str] = None
     targetUpdateEmail: Optional[str] = None
     targetUpdatePhone: Optional[str] = None
+    targetUpdateCrmId: Optional[str] = None
     tpname: Optional[str] = None
     tpurl: Optional[str] = None
     tprefurl: Optional[str] = None
@@ -55,6 +56,10 @@ class Event(BaseModel):
     eventdata: Optional[str] = None
     imageUrls: Optional[str] = None
     metric: Optional[str] = None
+    # rawJsonData: Optional[Dict[str, Any]] = None
+    tsid: Optional[str] = None
+    tscur: Optional[str] = None
+    tsval: Optional[float] = None
 
 
 class EventDataCall(BaseModel):
