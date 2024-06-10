@@ -4,7 +4,7 @@ Using Pydantic define Model of Customer Data
 
 from pydantic import BaseModel
 from typing import List, Dict, Optional, Any, Annotated
-
+import json
 
 class Profile(BaseModel):
     journeyMapIds: str
@@ -41,8 +41,8 @@ class Profile(BaseModel):
     # incomeHistory: Optional[Dict[str, int]] = None
     # socialMediaProfiles: Optional[Dict[str, str]] = None
     # businessContacts: Optional[Dict[str, str]] = None
-    applicationIDs: Optional[Dict[str, Optional[str]]] = None
-    
+    # applicationIDs: Optional[List[str | None]] = None
+    applicationIDs: Optional[str] = None
 
 class Event(BaseModel):
     eventTime: Optional[str] = None

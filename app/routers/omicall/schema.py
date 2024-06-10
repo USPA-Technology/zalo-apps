@@ -66,73 +66,68 @@ class WebhookModelCall(BaseModel):
 
 #[Response Model Validator] - Receive a list of customers 
 class CreateBy(BaseModel):
-    id: str
-    name: str
-
+    id: Optional[str] = None
+    name: Optional[str] = None
 
 class LastUpdateBy(BaseModel):
-    id: str
-    name: str
-    action: str
-
+    id: Optional[str] = None
+    name: Optional[str] = None
+    action: Optional[str] = None
 
 class ValueItem(BaseModel):
-    value_id: str
-    display_value: Optional[str]
-    data_type: str
-    value_type: str
-    actual_value: Any
-    quantity_value: Any
-    currency: Any
-    ref_id: Any
-    list_evaluation: Any
-    country_code: Any
-
+    value_id: Optional[str] = None
+    display_value: Optional[str] = None
+    data_type: Optional[str] = None
+    value_type: Optional[str] = None
+    actual_value: Optional[Any] = None
+    quantity_value: Optional[Any] = None
+    currency: Optional[Any] = None
+    ref_id: Optional[Any] = None
+    list_evaluation: Optional[Any] = None
+    country_code: Optional[Any] = None
 
 class AttributeStructureItem(BaseModel):
-    identify: bool
-    attribute_id: str
-    field_code: str
-    field_type: str
-    function: Any
-    formula: Any
-    data_format: Any
-    value: List[ValueItem]
-    is_memory: Any
-
+    identify: Optional[bool] = None
+    attribute_id: Optional[str] = None
+    field_code: Optional[str] = None
+    field_type: Optional[str] = None
+    function: Optional[Any] = None
+    formula: Optional[Any] = None
+    data_format: Optional[Any] = None
+    value: Optional[List[ValueItem]] = None
+    is_memory: Optional[Any] = None
 
 class ContactCategoriesViewItem(BaseModel):
     id: Optional[str] = None
-    name: str
-    type: str
-    types: Any
-    parent_id: Any
-    parent_name: Any
-    level: int
-    color: Any
-    ref_id: Any
-
+    name: Optional[str] = None
+    type: Optional[str] = None
+    types: Optional[Any] = None
+    parent_id: Optional[Any] = None
+    parent_name: Optional[Any] = None
+    level: Optional[int] = None
+    color: Optional[Any] = None
+    ref_id: Optional[Any] = None
 
 class ItemCustomer(BaseModel):
-    id: str
-    contact_type: str
-    create_by: CreateBy
-    last_update_by: LastUpdateBy
-    created_date: int
-    last_updated_date: int
+    id: Optional[str] = None
+    contact_type: Optional[str] = None
+    create_by: Optional[CreateBy] = None
+    last_update_by: Optional[LastUpdateBy] = None
+    created_date: Optional[int] = None
+    last_updated_date: Optional[int] = None
     tenant_id: Optional[str] = None
     source_contact_id: Optional[str] = None
     public_id: Optional[str] = None
-    user_owner_id: str
-    attribute_structure: List[AttributeStructureItem]
+    user_owner_id: Optional[str] = None
+    attribute_structure: Optional[List[AttributeStructureItem]] = None
     tags: Optional[List] = None
-    business_type: List
-    contact_categories: List[str]
+    business_type: Optional[List] = None
+    contact_categories: Optional[List[str]] = None
     filter_contacts: Optional[List] = None
-    total_interactive: int
+    total_interactive: Optional[int] = None
     related_employee: Optional[List] = None
-    ref_id: str
-    ref_code: str
+    ref_id: Optional[str] = None
+    ref_code: Optional[str] = None
     tags_view: Optional[List] = None
     business_type_view: Optional[List] = None
     contact_categories_view: Optional[List[ContactCategoriesViewItem]] = None

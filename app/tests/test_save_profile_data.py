@@ -7,17 +7,21 @@ now = datetime.now() # current date and time
 
 import httpx
 from fastapi import HTTPException
-api_url = ''
+api_url = 'https://cdpeveron.dpoint.vn/api/profile/save'
 
 headers = {
     "Content-Type": 'application/json',
     "Access-Control-Allow-Origin": "",
-    "tokenkey": '',
-    "tokenvalue": ''
+    "tokenkey": '35h2U5zc2HZFSgYIWyE3dI',
+    "tokenvalue": '3629481_1CoBZOdKC8DBFEhzLr8bU8'
 }
 sampleExtAttributes = {}
 sampleSocialMediaProfiles = {"zalo": "123456789-213828"}
 sampleIncomeHistory = {"2022-2023": 2000000, "2023-2024": 3000000}
+applicationIDs = ['kiotviet-KH410273']
+
+# ref_code = 'KiotViet-KH410273
+
 
 profile = {
     "journeyMapIds": "1aV9CvRmD6WCvaWAjUOfGk",
@@ -49,9 +53,10 @@ profile = {
     "saleAgencies": "Agency A; Agency B; Agency C",  # the list of sales sources
     "saleAgents": "Mr.Thomas; Ms.Anna",  # the list of sales persons
     "notes": "this is a test",
-    "extAttributes": json.dumps(sampleExtAttributes),
-    "incomeHistory": json.dumps(sampleIncomeHistory),
-    "socialMediaProfiles": json.dumps(sampleSocialMediaProfiles)
+    # "extAttributes": json.dumps(sampleExtAttributes),
+    # "incomeHistory": json.dumps(sampleIncomeHistory),
+    # "socialMediaProfiles": json.dumps(sampleSocialMediaProfiles),
+    "applicationIDs":json.dumps(applicationIDs)
 }
 
 
@@ -68,7 +73,7 @@ async def send_test_api():
     try:
         async with httpx.AsyncClient() as client:
             print(json)
-            response = await client.post(url = api_url, headers=headers, json=profile)
+            response = await client.post(url = api_url, headers=headers, data=json_payload)
             orders = response.json()
             return orders
     except httpx.RequestError as e:

@@ -45,7 +45,8 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
         if values:
             display_value = values[0].display_value
             data_dict[field_code] = display_value
-                                
+    ref_code = data_dict.get("ref_code")
+    applicationIDs_ = [f"KiotViet-{ref_code}"]               
     return Profile (
         journeyMapIds = journeyMapIds,
         dataLabels = dataLabels,
@@ -57,7 +58,7 @@ def convert_customer_data_mapping(item: ItemCustomer ) -> Profile:
         dateOfBirth = data_dict.get("birth_date"),
         livingLocation = data_dict.get("address"),
         jobTitles = data_dict.get("job_title"),
-        applicationIDs= {"Refcode": data_dict.get("ref_code")}
+        applicationIDs= json.dumps(applicationIDs_)
         )
 
 # Process data for events

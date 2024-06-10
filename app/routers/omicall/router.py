@@ -48,7 +48,7 @@ async def get_customer_list(
     headers = {
         "Authorization": access_token
     }
-    total_user = 0
+    total_successful_customer = 0
     while True:
         params = {
             "page": page,
@@ -70,16 +70,18 @@ async def get_customer_list(
                     break
                 for item in items:
                     await send_cdp_api_profile_retry(item)
+                    total_successful_customer += 1
                 # return {"message": "Takes have been queud."}
                 page += 1
+                print(page)
             
         except httpx.HTTPStatusError as e:
             raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
         except httpx.RequestError as e:
             raise HTTPException(status_code=500, detail=f"Error connecting to OmiCall: {e}")
     
-    count_total_user = len(total_user)
-    return {f"Total user": {count_total_user}}
+   
+    return {f"Total_successful_customers": total_successful_customer, f"Page": page}
 
 
 
