@@ -18,9 +18,7 @@ from core.config import (SECRET_KEY_WEBHOOK,
                             ACCESS_TOKEN_KIOTVIET, RETAILER,
                             )
 
-from .tasks import (send_cdp_api_profile,
-                    send_cdp_api_profile_retry,
-                    send_with_retries,
+from .tasks import (send_cdp_api_profile_retry,
                     send_cdp_api_event)
 
 signature = SECRET_KEY_WEBHOOK
@@ -88,11 +86,14 @@ async def get_customer_info(client_code: str):
         json: Information about the customer.
     """
     api_url = f"https://public.kiotapi.com/customers/code/{client_code}"
-    access_token = ACCESS_TOKEN_KIOTVIET 
+    access_token = ACCESS_TOKEN_KIOTVIET
     headers = {
         "Retailer": retailer,
         "Authorization": access_token
     }
+
+    if not headers["Retailer"] or not headers["Authorization"]:
+        raise HTTPException(status_code=400, detail="Header Retailer hoặc Authorization bị thiếu hoặc không hợp lệ")
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url, headers=headers)
@@ -294,29 +295,7 @@ async def get_invoices(
     created_date: str = None,
     from_purchase_date: str = None
 ):
-    """
-    Retrieve invoices with specified parameters.
 
-    Args:
-        branch_ids (List[int], optional): The branch IDs.
-        customer_ids (List[int], optional): The customer IDs.
-        customer_code (str, optional): The customer code.
-        status (List[int], optional): The invoice status.
-        include_payment (bool, optional): Include payment information.
-        include_invoice_delivery (bool, optional): Include invoice delivery information.
-        last_modified_from (str, optional): The last modified datetime.
-        page_size (int, optional): The number of items per page.
-        current_item (int, optional): The current page.
-        to_date (str, optional): The datetime until which invoices are modified.
-        order_by (str, optional): The field to order by.
-        order_direction (str, optional): The order direction ('Asc' or 'Desc').
-        invoice_id (int, optional): The invoice ID.
-        created_date (str, optional): The created datetime.
-        from_purchase_date (str, optional): The datetime from which the transaction occurred.
-
-    Returns:
-        json: Information about the invoices.
-    """
     api_url = "https://public.kiotapi.com/invoices"
     access_token = ACCESS_TOKEN_KIOTVIET
     headers = {

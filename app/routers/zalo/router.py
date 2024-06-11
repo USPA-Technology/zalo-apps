@@ -85,13 +85,13 @@ async def get_user_list_id(
 @router.get('/getUsers/')
 async def get_users():
     api_url = "https://openapi.zalo.me/v3.0/oa/user/getlist"
-    access_token = ACCESS_TOKEN_ZALO_OA_EVERON
+    access_token = ACCESS_TOKEN_ZALO
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(api_url,
                                         params={"data": json.dumps({"offset": 0, "count": 20, "tag_name": ""})},
                                         headers={"access_token": access_token})
-            users_follow = response.json()["data"]["users"]
+            users_follow = response.json() #["data"]["users"]
             return users_follow
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with Zalo API")

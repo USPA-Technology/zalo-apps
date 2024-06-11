@@ -60,37 +60,12 @@ def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
 
 # Process data for events
 def convert_event_data_mapping(item: DatumInvoices) -> Event:
-    
-    # def kiotviet_to_cdp(invoiceDetail: InvoiceDetails):
-    #     cdp_events = []
-    #     for item_ in item.invoiceDetails:
-    #         cdp_event = {
-    #             "name": item_.productName,
-    #             "itemtId": item_.productId,  # Assuming productId is the item ID
-    #             "idType": "item_ID",
-    #             # Assuming price is the original price
-    #             "originalPrice": item_.price,
-    #             "salePrice": item_.price - item_.discount,
-    #             "quantity": item_.quantity,
-    #             "currency": "VND",
-    #             "supplierId": "",  # Not available in KiotViet data
-    #             "couponCode": "",  # Not available in KiotViet data
-    #             # Not available in KiotViet data
-    #             "fullUrl": 'uri://productCode:' + item_.productCode,
-    #             "imageUrl": ""  # Not available in KiotViet data
-    #     }
-    #         cdp_events.append(cdp_event)
-    #     return cdp_events
-
-    
     metric_event = "purchase"
-    # shoppingCartItems = kiotviet_to_cdp(item.invoiceDetails)
-    
     return Event (
         eventTime= convert_kiotviettime_to_CDP_time(item.purchaseDate),
         targetUpdateCrmId= f"KiotViet-{item.customerCode}",
         tpname = f"{item.soldByName}- {item.branchName}",
-        # rawJsonData= item,
+        rawJsonData = item.model_dump_json(),
         metric = metric_event,
         tsid= item.code,
         tscur= "VND",
@@ -98,26 +73,10 @@ def convert_event_data_mapping(item: DatumInvoices) -> Event:
 
     )
 
-
 """ 
 Functions that receive data model
 and send them to the CDP API after the conversion has been processed
 """
-# Send profile data to CDP
-async def send_cdp_api_profile(data: DatumCustomers):
-    logger.info("Processing send data")
-    data_profile_coverted = convert_customer_data_mapping(data).model_dump()
-    print(data_profile_coverted)
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url= cdp_api_url_profile_save,
-                                         headers=cdp_headers,
-                                         json=data_profile_coverted)
-            response_result = response.json()
-            print(response_result)
-            return response_result
-    except httpx.RequestError as e:
-        raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
 
 # Send profile data to CDP with retry logic
 async def send_cdp_api_profile_retry(data: DatumCustomers, retries=3, delay=2):
@@ -149,25 +108,8 @@ async def send_cdp_api_profile_retry(data: DatumCustomers, retries=3, delay=2):
     return None
 
 
-# [Plan 2] Send data with requests module
-def send_cdp_api_profile_request(data: DatumCustomers):
-    logger.info("Processing send data")
-    result = convert_customer_data_mapping(data).model_dump()
-    logger.info(f"Sending data: {result}")
-    print(result)
-    try:
-        response = requests.post(url=cdp_api_url_profile_save, headers=cdp_headers, json=result)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-        client_detail = response.json()
-        logger.info(f"Received response: {client_detail}")
-        return client_detail
-    except requests.RequestException as e:
-        logger.error(f"Error connection with CDP: {e}")
-        raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
-   
-   
 # Send event data to CDP
-async def send_cdp_api_event(data: DatumOrders):
+async def send_cdp_api_event(data: DatumInvoices):
     logger.info("Processing send data")
     data_converted = convert_event_data_mapping(data).model_dump()
     print(data_converted)
@@ -179,34 +121,3 @@ async def send_cdp_api_event(data: DatumOrders):
             return result
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
-
-
-# Send profile data to CDP
-def send_cdp_api_profile_request_test(data: DatumCustomers):
-    logger.info("Processing send data")
-    result = convert_customer_data_mapping(data).model_dump()
-    logger.info(f"Sending data: {result}")
-    try:
-        response = requests.post(url=cdp_api_url_profile_save, headers=cdp_headers, json=result)
-        response.raise_for_status()  # Raise an HTTPError for bad responses
-        client_detail = response.json()
-        logger.info(f"Received response: {client_detail}")
-        return client_detail
-    except requests.RequestException as e:
-        logger.error(f"Error connection with CDP: {e}")
-        raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
-
-
-# Retry function for sending profile data
-def send_with_retries(data, retries=3, delay=2):
-    for attempt in range(retries):
-        try:
-            return send_cdp_api_profile_request(data)
-        except HTTPException as e:
-            logger.warning(f"Attempt {attempt + 1} failed: {e}")
-            if attempt < retries - 1:
-                time.sleep(delay)
-            else:
-                raise
-            
-            

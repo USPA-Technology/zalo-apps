@@ -56,7 +56,7 @@ class Event(BaseModel):
     eventdata: Optional[str] = None
     imageUrls: Optional[str] = None
     metric: Optional[str] = None
-    # rawJsonData: Optional[Dict[str, Any]] = None
+    rawJsonData: Optional[str] = None
     tsid: Optional[str] = None
     tscur: Optional[str] = None
     tsval: Optional[float] = None
