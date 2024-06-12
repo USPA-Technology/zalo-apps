@@ -60,13 +60,14 @@ def convert_customer_data_mapping(item: DatumCustomers ) -> Profile:
 
 # Process data for events
 def convert_event_data_mapping(item: DatumInvoices) -> Event:
-    metric_event = "purchase"
+    touchpoin_name = f"{item.soldByName} - {item.branchName}"
     return Event (
         eventTime= convert_kiotviettime_to_CDP_time(item.purchaseDate),
         targetUpdateCrmId= f"KiotViet-{item.customerCode}",
-        tpname = f"{item.soldByName}- {item.branchName}",
+        tpname = touchpoin_name,
+        tpurl= "uri://KiotViet:soldbyId:" + str(item.soldById),
         rawJsonData = item.model_dump_json(),
-        metric = metric_event,
+        metric = "purchase",
         tsid= item.code,
         tscur= "VND",
         tsval= item.totalPayment,
@@ -121,3 +122,34 @@ async def send_cdp_api_event(data: DatumInvoices):
             return result
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
+    
+    
+    
+# Send event data to CDP with retry logic
+async def send_cdp_api_event_retry(data: DatumInvoices, retries=3, delay=2):
+    logger.info("Processing send data")
+    data_profile_converted = convert_event_data_mapping(data).model_dump()
+    print(data_profile_converted)
+
+    for attempt in range(retries):
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url=cdp_api_url_event_save,
+                                             headers=cdp_headers,
+                                             json=data_profile_converted)
+                response.raise_for_status()  # Raise an HTTPError if the response was unsuccessful
+                response_result = response.json()
+                print(response_result)
+                return response_result
+        except httpx.RequestError as e:
+            logger.error(f"Attempt {attempt + 1} failed: {e}")
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                logger.error("Max retries exceeded. Could not connect to CDP.")
+                raise HTTPException(status_code=500, detail=f"Error connection with CDP: {e}")
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+
+    return None

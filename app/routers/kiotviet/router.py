@@ -19,14 +19,14 @@ from core.config import (SECRET_KEY_WEBHOOK,
                             )
 
 from .tasks import (send_cdp_api_profile_retry,
-                    send_cdp_api_event)
+                    send_cdp_api_event_retry)
 
 signature = SECRET_KEY_WEBHOOK
 retailer = RETAILER
 
 router  = APIRouter(tags=['KiotViet'])
 
-# Cấu hình logging
+# logging
 logging.basicConfig(filename='customer_retrieval.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = ProcessedItemLogger()
 
@@ -270,7 +270,7 @@ async def get_orders(
             items = orders_model.data
             if items:
                 for item in items:
-                    await send_cdp_api_event(item) 
+                    await send_cdp_api_event_retry(item) 
             return orders
     except httpx.RequestError as e:
         raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
@@ -279,21 +279,21 @@ async def get_orders(
 # [API-GET] Get the invoice list 
 @router.get('/kiotviet/invoices/')
 async def get_invoices(
-    branch_ids: List[int] = None,
-    customer_ids: List[int] = None,
+    # branch_ids: List[int] = None,
+    # customer_ids: List[int] = None,
     customer_code: str = None,
-    status: List[int] = None,
+    status_: int = 1,
     include_payment: bool = True,
     include_invoice_delivery: bool = True,
     last_modified_from: str = None,
-    page_size: int = 20,
+    page_size: int = 100,
     current_item: int = None,
     to_date: str = None,
-    order_by: str = None,
+    order_by: str = "id",
     order_direction: str = 'Asc',
-    invoice_id: int = None,
-    created_date: str = None,
-    from_purchase_date: str = None
+    # invoice_id: int = None,
+    # created_date: str = None,
+    # from_purchase_date: str = None
 ):
 
     api_url = "https://public.kiotapi.com/invoices"
@@ -302,33 +302,53 @@ async def get_invoices(
         "Retailer": retailer,
         "Authorization": access_token
     }
-    params = {
-        "branchIds": branch_ids,
-        "customerIds": customer_ids,
-        "customerCode": customer_code,
-        "status": status,
-        "includePayment": include_payment,
-        "includeInvoiceDelivery": include_invoice_delivery,
-        "lastModifiedFrom": last_modified_from,
-        "pageSize": page_size,
-        "currentItem": current_item,
-        "toDate": to_date,
-        "orderBy": order_by,
-        "orderDirection": order_direction,
-        "orderId": invoice_id,
-        "createdDate": created_date,
-        "fromPurchaseDate": from_purchase_date
-    }
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(api_url, headers=headers, params=params)
-            result = response.json()
-            invoices = RespInvoiceList(**result)
-            items = invoices.data
-            if items:
-                for item in items:
-                    await send_cdp_api_event(item) 
-            return invoices
-    except httpx.RequestError as e:
-        raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
+    last_processed_item = logger.get_last_processed_item()
+    # current_item = 1
+    logging.info(f"Starting from last processed item: {last_processed_item}")
+    while True:
+        params = {
+            # "branchIds": branch_ids,
+            # "customerIds": customer_ids,
+            # "customerCode": customer_code,
+            "status": status_,
+            "includePayment": include_payment,
+            "includeInvoiceDelivery": include_invoice_delivery,
+            "lastModifiedFrom": last_modified_from,
+            "pageSize": page_size,
+            "currentItem": current_item,
+            "toDate": to_date,
+            "orderBy": order_by,
+            "orderDirection": order_direction,
+            # "orderId": invoice_id,
+            # "createdDate": created_date,
+            # "fromPurchaseDate": from_purchase_date
+        }
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(api_url, headers=headers, params=params)
+                result = response.json()
+                invoices = RespInvoiceList(**result)
+                items = invoices.data
+                total_records = invoices.total
+                if items:
+                    for item in items:
+                        print(current_item)
+                        if current_item > last_processed_item:
+                            await send_cdp_api_event_retry(item)
+                            logger.log_processed_item(current_item)
+                            logging.info(f"Processed item: {current_item}")
+                        current_item += 1
+                if current_item > total_records:
+                    break
+                if current_item <= last_processed_item:
+                    print('error current items')
+                    break        
+                # return invoices
+        except httpx.RequestError as e:
+            logging.error(f"Error connection with KiotViet: {e}")
+            raise HTTPException(status_code=500, detail=f"Error connection with KiotViet: {e}")
+        except httpx.HTTPStatusError as e:
+            logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+    return {"total": total_records, "data": current_item}
 
