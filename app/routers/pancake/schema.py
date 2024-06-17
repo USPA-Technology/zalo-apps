@@ -66,3 +66,110 @@ class ModelCustomer(BaseModel):
     success: Optional[bool] = None
     total_entries: Optional[int] = None
     total_pages: Optional[int] = None
+
+
+# Model orders
+class Creator(BaseModel):
+    avatar_url: Any
+    fb_id: str
+    id: str
+    name: str
+
+
+class VariationInfo(BaseModel):
+    detail: Any
+    fields: Any
+    display_id: Any
+    name: str
+    product_display_id: Any
+    retail_price: int
+    weight: int
+
+
+class Item(BaseModel):
+    discount_each_product: int
+    is_bonus_product: bool
+    is_discount_percent: bool
+    is_wholesale: bool
+    one_time_product: bool
+    quantity: int
+    variation_id: str
+    product_id: str
+    variation_info: VariationInfo
+
+
+class Partner(BaseModel):
+    cod: int
+    custom_partner_id: Any
+    extend_code: str
+    extend_update: List
+    is_returned: Any
+    order_number_vtp: Any
+    paid_at: Any
+    partner_id: int
+    sort_code: Any
+    system_created: bool
+    total_fee: int
+    updated_at: str
+
+
+class ShippingAddress(BaseModel):
+    address: str
+    commune_id: str
+    country_code: Any
+    district_id: str
+    full_address: str
+    full_name: str
+    phone_number: str
+    post_code: Any
+    province_id: str
+
+
+class Tag(BaseModel):
+    id: int
+    name: str
+
+
+class WarehouseInfo(BaseModel):
+    district_id: str
+    full_address: str
+    name: str
+    phone_number: str
+    province_id: str
+
+
+class DatumOrders(BaseModel):
+    bill_full_name: str
+    bill_phone_number: str
+    page_id: str
+    creator: Creator
+    id: int
+    inserted_at: str
+    updated_at: str
+    is_free_shipping: bool
+    received_at_shop: bool
+    partner_fee: int
+    customer_pay_fee: bool
+    items: List[Item]
+    note: str
+    note_print: Any
+    returned_reason: int
+    partner: Partner
+    warehouse_id: str
+    shipping_address: ShippingAddress
+    shipping_fee: int
+    shop_id: int
+    status: int
+    status_name: str
+    tags: List[Tag]
+    total_discount: int
+    warehouse_info: WarehouseInfo
+
+
+class ModelOrders(BaseModel):
+    data: List[DatumOrders]
+    page_number: int
+    page_size: int
+    success: bool
+    total_entries: int
+    total_pages: int

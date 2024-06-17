@@ -342,7 +342,7 @@ async def get_invoices(
                     break
                 if current_item <= last_processed_item:
                     print('error current items')
-                    break        
+            break        
                 # return invoices
         except httpx.RequestError as e:
             logging.error(f"Error connection with KiotViet: {e}")
