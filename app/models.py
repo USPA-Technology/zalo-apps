@@ -52,7 +52,6 @@ class Event(BaseModel):
     tpname: Optional[str] = None
     tpurl: Optional[str] = None
     tprefurl: Optional[str] = None
-    # eventdata: Optional[Dict] = None
     eventdata: Optional[str] = None
     imageUrls: Optional[str] = None
     metric: Optional[str] = None

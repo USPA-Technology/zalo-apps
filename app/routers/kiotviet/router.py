@@ -1,34 +1,35 @@
 from fastapi import APIRouter, HTTPException, Request, Depends
 from pydantic import ValidationError
 import httpx
-import requests
-import json
 import logging
-from typing import TYPE_CHECKING, Annotated, List, Optional
-
+from typing import List, Optional
+import datetime
 from .schema import (
                      WebhookCustomer, WebhookOrder, WebHookInvoice,
                      RespCustomerList,
                      RespOrderList,
-                     RespInvoiceList
+                     RespInvoiceList,
+                     RespProducts
                      )
-from models import Profile, Event
-from dependencies import is_valid_signature, ProcessedItemLogger
-from core.config import (SECRET_KEY_WEBHOOK,
-                            ACCESS_TOKEN_KIOTVIET, RETAILER,
+from dependencies import is_valid_signature
+from core.config import (SECRET_KEY_WEBHOOK, ACCESS_TOKEN_KIOTVIET, RETAILER,
                             )
+from core.config_logs import ProcessedItemLoggerCustomers, ProcessedItemLoggerInvoices, ProcessedItemLoggerProducts
 
-from .tasks import (send_cdp_api_profile_retry,
-                    send_cdp_api_event_retry)
+from .tasks import send_cdp_api_profile_retry, send_cdp_api_event_retry, import_cdp_csv_product
 
 signature = SECRET_KEY_WEBHOOK
 retailer = RETAILER
-
 router  = APIRouter(tags=['KiotViet'])
 
+
 # logging
-logging.basicConfig(filename='customer_retrieval.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = ProcessedItemLogger()
+logging.basicConfig(filename='everon_demo_etl_log.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger_customers = ProcessedItemLoggerCustomers()
+logger_invoices = ProcessedItemLoggerInvoices()
+logger_products = ProcessedItemLoggerProducts()
+
+today = datetime.datetime.now().replace(hour=0, minute=0, second=0,microsecond=0).isoformat()
 
 
 # [WEBHOOK] - Customer Update
@@ -149,7 +150,7 @@ async def get_customers(
     }
     all_customers = []
     # total_records = 20
-    last_processed_item = logger.get_last_processed_item()
+    last_processed_item = logger_customers.get_last_processed_item()
     current_item = 1
 
     logging.info(f"Starting from last processed item: {last_processed_item}")
@@ -185,7 +186,7 @@ async def get_customers(
                         print(current_item)
                         if current_item > last_processed_item:
                             await send_cdp_api_profile_retry(item)
-                            logger.log_processed_item(current_item)
+                            logger_customers.log_processed_item(current_item)
                             logging.info(f'Processed item: {current_item}')
                         current_item += 1
                         
@@ -302,7 +303,7 @@ async def get_invoices(
         "Retailer": retailer,
         "Authorization": access_token
     }
-    last_processed_item = logger.get_last_processed_item()
+    last_processed_item = logger_invoices.get_last_processed_item()
     # current_item = 1
     logging.info(f"Starting from last processed item: {last_processed_item}")
     while True:
@@ -335,7 +336,7 @@ async def get_invoices(
                         print(current_item)
                         if current_item > last_processed_item:
                             await send_cdp_api_event_retry(item)
-                            logger.log_processed_item(current_item)
+                            logger_invoices.log_processed_item(current_item)
                             logging.info(f"Processed item: {current_item}")
                         current_item += 1
                 if current_item > total_records:
@@ -352,3 +353,64 @@ async def get_invoices(
             raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
     return {"total": total_records, "data": current_item}
 
+
+
+# [API-GET] Get the product list 
+@router.get('/kiotviet/products/')
+async def get_products(
+    orderBy: str = "id",
+    lastModifiedFrom: Optional[str] = None,
+    pageSize: int = 100
+):
+    api_url = "https://public.kiotapi.com/products"
+    access_token = ACCESS_TOKEN_KIOTVIET
+    headers = {
+        "Retailer": RETAILER,
+        "Authorization": access_token
+    }
+
+    last_processed_item = logger_invoices.get_last_processed_item()
+    logging.info(f"Starting from last processed item of product: {last_processed_item}")
+    current_item_set = last_processed_item + 1
+    total_records = 0
+
+    while True:
+        params = {
+            "orderBy": orderBy,
+            "lastModifiedFrom": lastModifiedFrom,
+            "pageSize": pageSize,
+            "currentItem": current_item_set
+        }
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(api_url, headers=headers, params=params)
+                response.raise_for_status()  # Check for HTTP request errors
+                result = response.json()
+                products = RespProducts(**result)
+                items = products.data
+                total_records = products.total
+                if not items:
+                    logging.info("No more items to process of product.")
+                    break
+                
+                for item in items:
+                    await import_cdp_csv_product(item)
+                    logger_products.log_processed_item(current_item_set)
+                    logging.info(f"Processed item of product: {current_item_set}")
+                    current_item_set += 1
+                    
+                if current_item_set >= total_records:
+                    break
+                
+        except httpx.RequestError as e:
+            logging.error(f"Connection error with KiotViet: {e}")
+            raise HTTPException(status_code=500, detail=f"Connection error with KiotViet: {e}")
+        except httpx.HTTPStatusError as e:
+            logging.error(f"HTTP error occurred: {e.response.status_code} - {e.response.text}")
+            raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
+        except Exception as e:
+            logging.error(f"Unexpected error: {e}")
+            raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
+
+    return {"total": total_records, "data": current_item_set}

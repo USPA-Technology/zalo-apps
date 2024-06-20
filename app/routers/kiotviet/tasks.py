@@ -6,10 +6,12 @@ from fastapi import HTTPException, APIRouter
 from pydantic import ValidationError
 import logging
 import time
+import csv
+import re
 from .schema import RespCustomerList
 
 from models import Profile, Event
-from .schema import DatumCustomers, DatumOrders, DatumInvoices, InvoiceDetails
+from .schema import DatumCustomers, DatumOrders, DatumInvoices, InvoiceDetails, DatumProduct
 
 from core.config import (TOKEN_KEY_CDP_EVERON_KIOTVIET, TOKEN_VALUE_CDP_EVERON_KIOTVIET,
                          CDP_URL_PROFILE_EVERON_SAVE, CDP_URL_EVENT_EVERON_SAVE,
@@ -153,3 +155,50 @@ async def send_cdp_api_event_retry(data: DatumInvoices, retries=3, delay=2):
             raise HTTPException(status_code=e.response.status_code, detail=f"HTTP error: {e.response.text}")
 
     return None
+
+
+
+# Assuming convert_event_data_mapping is a function that converts data to the desired format
+# and model_dump is a method that dumps data to a dictionary
+
+async def import_cdp_csv_product(data: DatumProduct, csv_file_path='cdp_products.csv'):
+    logger.info("Processing send data")
+    # Define the CSV file columns
+    csv_columns = [
+        'Product_Type', 'Keywords', 'Store_ID', 'Product_ID_Type', 'Product_ID', 'Title',
+        'Description', 'Image_URL', 'Original_Price', 'Sale_Price', 'Currency', 'Full_URL'
+    ]
+    
+    # Map the data to the corresponding CSV columns
+    csv_data = {
+        'Product_Type': data.categoryName or "",
+        'Keywords': data.name or "",
+        'Store_ID': data.retailerId or "",
+        'Product_ID_Type': "SKU",
+        'Product_ID': data.code or "",
+        'Title': data.fullName or "",
+        'Description': re.sub(r'</?br.*?>', ' ', data.description or ""),
+        'Image_URL': ", ".join(data.images) if data.images else "",
+        'Original_Price': data.basePrice or 0.0,
+        'Sale_Price': data.basePrice or 0.0,
+        'Currency': "VND",
+        'Full_URL': f"https://www.everonvn.vn/tim-kiem?key={data.id}"
+    }
+    # print(csv_data)
+    try:
+        # Open the CSV file in append mode
+        with open(csv_file_path, mode='a', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=csv_columns)
+            
+            # Write the header if the file is empty
+            file.seek(0, 2)  # Move the cursor to the end of the file
+            if file.tell() == 0:
+                writer.writeheader()
+            
+            # Write the data to the CSV file
+            writer.writerow(csv_data)
+            logger.info(f"Data written to CSV file: {csv_file_path}")
+    
+    except Exception as e:
+        logger.error(f"Failed to write data to CSV: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to write data to CSV: {e}")

@@ -237,6 +237,45 @@ class RespInvoiceList(BaseModel):
     pageSize: int
     data: List[DatumInvoices]
 
+# Response Model Products Update KiotVieT
+
+from typing import List, Optional
+from pydantic import BaseModel
+
+class AttributeProduct(BaseModel):
+    productId: Optional[int] = None
+    attributeName: Optional[str] = None
+    attributeValue: Optional[str] = None
+
+
+class DatumProduct(BaseModel):
+    createdDate: Optional[str] = None
+    id: Optional[int] = None
+    retailerId: Optional[int] = None
+    code: Optional[str] = None
+    name: Optional[str] = None
+    fullName: Optional[str] = None
+    categoryId: Optional[int] = None
+    categoryName: Optional[str] = None
+    allowsSale: Optional[bool] = None
+    type: Optional[int] = None
+    hasVariants: Optional[bool] = None
+    basePrice: Optional[float] = None
+    weight: Optional[int] = None
+    conversionValue: Optional[int] = None
+    description: Optional[str] = None
+    modifiedDate: Optional[str] = None
+    isActive: Optional[bool] = None
+    attributes: Optional[List[AttributeProduct]] = None
+    images: Optional[List[str]] = None
+
+
+class RespProducts(BaseModel):
+    total: Optional[int] = None
+    pageSize: Optional[int] = None
+    data: Optional[List[DatumProduct]] = None
+    timestamp: Optional[str] = None
+
 
 # [WEBHOOK] Response Model Order Update KiotViet
 class WebhookOrderDetail(BaseModel):
