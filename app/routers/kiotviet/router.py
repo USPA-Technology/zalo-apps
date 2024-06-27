@@ -400,7 +400,7 @@ async def get_products(
                     logging.info(f"Processed item of product: {current_item_set}")
                     current_item_set += 1
                     
-                if current_item_set >= total_records:
+                if current_item_set > total_records:
                     break
                 
         except httpx.RequestError as e:

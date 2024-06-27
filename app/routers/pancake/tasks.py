@@ -76,13 +76,7 @@ def convert_event_data_mapping(item: DatumOrders) -> Event:
         tsid= item.code,
         tscur= "VND",
         tsval= item.totalPayment,
-
     )
-
-
-
-
-
 
 
 # Send profile data to CDP with retry logic
